@@ -1,0 +1,9 @@
+:global(html) {
+  overflow: hidden;
+}
+/*:global(body) {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden;
+  padding: 0 !important;
+}*/
