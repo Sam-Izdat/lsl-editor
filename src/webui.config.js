@@ -47,7 +47,7 @@ export const cfg = {
   IDB_THUMBNAIL_NAME: 'docthumbs',
 
   // LocalStorage prefix
-  LS_PREFIX:          'lsl-script',
+  LS_PREFIX:          'lsl-script-',
 
   // the programming language monaco editor should use
   EDITOR_LANGUAGE:    'c',
