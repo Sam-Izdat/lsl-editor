@@ -1,8 +1,8 @@
 // Note: __APP_NAME__, __APP_VERSION__ and __BUILD_TYPE__ are provided by vite config
 
 // URL
-const APP_HOST_PATH = 'https://sam-izdat.github.io/lsl-editor/';
-const APP_BASE_PATH = '/lsl-editor';
+export const APP_HOST_PATH = 'https://sam-izdat.github.io/lsl-editor/';
+export const APP_BASE_PATH = '/lsl-editor';
 
 export const cfg = {
   APP_HOST_PATH,
