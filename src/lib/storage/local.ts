@@ -1,6 +1,7 @@
 import type DocumentSession from '$lib/doc_types';
 import { Log } from '$lib';
-const prefix = 'saved-doc-';
+import { cfg } from '$root/webui.config.js';
+const prefix = cfg.LS_PREFIX;
 
 export const save = async (session: DocumentSession) => {
   const key = prefix + session.docID;

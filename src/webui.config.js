@@ -46,6 +46,9 @@ export const cfg = {
   // IndexedDB store name for archive screenshots/thumbnails
   IDB_THUMBNAIL_NAME: 'docthumbs',
 
+  // LocalStorage prefix
+  LS_PREFIX:          'lsl-script',
+
   // the programming language monaco editor should use
   EDITOR_LANGUAGE:    'c',
 
