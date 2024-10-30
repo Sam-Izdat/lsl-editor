@@ -1,8 +1,8 @@
 // Note: __APP_NAME__, __APP_VERSION__ and __BUILD_TYPE__ are provided by vite config
 
 // URL
-const APP_HOST_PATH = 'https://sam-izdat.github.io/webui-editor-skeleton/';
-const APP_BASE_PATH = '/webui-editor-skeleton';
+const APP_HOST_PATH = 'https://sam-izdat.github.io/lsl-editor/';
+const APP_BASE_PATH = '/lsl-editor';
 
 export const cfg = {
   APP_HOST_PATH,
@@ -10,9 +10,9 @@ export const cfg = {
 
   // GENERAL
   //------------------
-  APP_TITLE:        'Webui Editor Skeleton',
-  APP_SHORT_NAME:   'WES',
-  APP_DESCRIPTION:  'A web UI template for code editors.',  
+  APP_TITLE:        'LegitSL Editor',
+  APP_SHORT_NAME:   'LSLE',
+  APP_DESCRIPTION:  'Web-based editor for LegitSL',  
   APP_THEME:        'hamlindigo', // skeleton UI theme
 
   // LOGGING
@@ -26,10 +26,10 @@ export const cfg = {
   //------------------
   PWA_START_URL:     APP_HOST_PATH,
   PWA_SCOPE:         APP_HOST_PATH,
-  PWA_FILE_EXT:      '.myscript',
-  PWA_FILE_MIME_TYPE:'application/x-my-custom-script',
+  PWA_FILE_EXT:      '.lsl',
+  PWA_FILE_MIME_TYPE:'application/x-legitsl',
   PWA_FILE_ACTION:   APP_HOST_PATH + 'open-file',
-  PWA_URL_PATTERN:   'myscript://*',
+  PWA_URL_PATTERN:   'legitsl://*',
   PWA_THEME_COLOR:   '#3B4762', // theme color for app status/title bars etc
   PWA_BG_COLOR:      '#3B4762', // splash screen background
   PWA_ORIENTATION:   'any',     // setting 'landscape' will force PWA into landscape mode at all times
@@ -38,7 +38,7 @@ export const cfg = {
   //------------------
 
   // IndexedDB database name
-  IDB_DB_NAME:        'WebEditorStorage',
+  IDB_DB_NAME:        'LSLEditorStorage',
 
   // IndexedDB store name for script/document sessions
   IDB_DOC_STORE_NAME: 'docsessions',
