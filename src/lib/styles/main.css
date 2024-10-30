@@ -1,9 +1,15 @@
 :global(html) {
   overflow: hidden;
 }
-/*:global(body) {
+:global(body) {
   height: 100dvh !important;
   max-height: 100dvh !important;
   overflow: hidden;
   padding: 0 !important;
-}*/
+}
+
+/*Important*/
+:global(#page-content) {
+  max-height: 100%;
+  overflow-y: hidden;
+}
