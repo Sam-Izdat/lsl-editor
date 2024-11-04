@@ -225,8 +225,9 @@
                 <svelte:fragment slot="summary"><p class="font-semibold text-base">{strImportRawURL}</p></svelte:fragment>
                 <svelte:fragment slot="content">
                   <p class="text-sm">
-                    You can import externally-hosted scripts if you have a URL to a raw script file or a gist ID. 
-                    The import link generated will be shareable and will stay up tp date if the file changes on the external host. 
+                    You can import externally-hosted scripts if you have a URL to a raw script file or a 
+                    <a href="https://gist.github.com/" target="_blank">gist</a> ID. 
+                    The import link generated will be shareable and will stay up to date if the file changes on the external host. 
                     You can also embed this editor with its external resource in an iframe - e.g. to post on a blog.
                   </p>
                 </svelte:fragment>
@@ -255,6 +256,42 @@
                     </div>
                   </div>
 
+                  <div class="flex items-center justify-center my-1">
+                    <RadioGroup class="mx-1">
+                      <RadioItem bind:group={iframeView} name="iframe-view" value={0} title="Split-Pane">
+                        <Icon src="{hero.RectangleGroup}" size="16" class="mx-0 my-1" solid/>
+                      </RadioItem>
+                      <RadioItem bind:group={iframeView} name="iframe-view" value={1} title="View Code">
+                        <Icon src="{hero.CodeBracket}" size="16" class="mx-0 my-1" solid/>
+                      </RadioItem>
+                      <RadioItem bind:group={iframeView} name="iframe-view" value={2} title="View Canvas">
+                        <Icon src="{hero.Photo}" size="16" class="mx-0 my-1" solid/>
+                      </RadioItem>
+                      <RadioItem bind:group={iframeView} name="iframe-view" value={3} title="View Controls">
+                        <Icon src="{hero.AdjustmentsHorizontal}" size="16" class="mx-0 my-1" solid/>
+                      </RadioItem>
+                    </RadioGroup>
+                  </div>
+                  <div class="flex items-center justify-center my-1">
+                    <RadioGroup class="mx-1">
+                      <RadioItem 
+                        bind:group={iframeAutoBuild} 
+                        on:click={() => {iframeAutoBuild = +!iframeAutoBuild;}}
+                        name="iframe-autobuild" value={1} title="Auto-Build"
+                      >
+                        <Icon src="{hero.PlayCircle}" size="16" class="mx-0 my-1" solid/>
+                      </RadioItem>
+                    </RadioGroup>
+                    <RadioGroup class="mx-1">
+                      <RadioItem 
+                        bind:group={iframeReadOnly} 
+                        on:click={() => {iframeReadOnly = +!iframeReadOnly;}}
+                        name="iframe-readonly" value={1} title="Read-Only"
+                      >
+                        <Icon src="{iframeReadOnly ? hero.LockClosed : hero.LockOpen}" size="16" class="mx-0 my-1" solid/>
+                      </RadioItem>
+                    </RadioGroup>
+                  </div>
 
                 </svelte:fragment>
               </AccordionItem>
@@ -264,6 +301,18 @@
                 </svelte:fragment>
                 <svelte:fragment slot="summary"><p class="font-semibold text-base">Embed</p></svelte:fragment>
                 <svelte:fragment slot="content">
+                  <CodeBlock language="html" code={
+                  `<iframe ` +
+                  `\n  width="${iframeWidth || 800}" `+
+                  `\n  height="${iframeHeight || 600}" ` + 
+                  `${iframeAllowFullscreen ? '\n  allow="fullscreen" ' : ''}` + 
+                  `\n  src="${shareableURL || '[PROVIDE URL ABOVE]'}${shareableURL.includes('?') ? '&' : '?'}` +
+                    `view=${iframeView}&` +
+                    `autobuild=${iframeAutoBuild}&` +
+                    `readonly=${iframeReadOnly}` +
+                  `" ` + 
+                  `\n  title="${cfg.APP_TITLE}">`}>                    
+                  </CodeBlock>
                   <div>
                     <div class="flex items-center justify-center">
                       <input 
@@ -290,53 +339,7 @@
                         </RadioItem>
                       </RadioGroup>
                     </div>
-                    <div class="flex items-center justify-center my-1">
-                      <RadioGroup class="mx-1">
-                        <RadioItem bind:group={iframeView} name="iframe-view" value={0} title="Split-Pane">
-                          <Icon src="{hero.ViewColumns}" size="16" class="mx-0 my-1" solid/>
-                        </RadioItem>
-                        <RadioItem bind:group={iframeView} name="iframe-view" value={1} title="View Code">
-                          <Icon src="{hero.CodeBracket}" size="16" class="mx-0 my-1" solid/>
-                        </RadioItem>
-                        <RadioItem bind:group={iframeView} name="iframe-view" value={2} title="View Canvas">
-                          <Icon src="{hero.Photo}" size="16" class="mx-0 my-1" solid/>
-                        </RadioItem>
-                        <RadioItem bind:group={iframeView} name="iframe-view" value={3} title="View Controls">
-                          <Icon src="{hero.AdjustmentsHorizontal}" size="16" class="mx-0 my-1" solid/>
-                        </RadioItem>
-                      </RadioGroup>
-                      <RadioGroup class="mx-1">
-                        <RadioItem 
-                          bind:group={iframeAutoBuild} 
-                          on:click={() => {iframeAutoBuild = +!iframeAutoBuild;}}
-                          name="iframe-autobuild" value={1} title="Auto-Build"
-                        >
-                          <Icon src="{hero.PlayCircle}" size="16" class="mx-0 my-1" solid/>
-                        </RadioItem>
-                      </RadioGroup>
-                      <RadioGroup class="mx-1">
-                        <RadioItem 
-                          bind:group={iframeReadOnly} 
-                          on:click={() => {iframeReadOnly = +!iframeReadOnly;}}
-                          name="iframe-readonly" value={1} title="Read-Only"
-                        >
-                          <Icon src="{iframeReadOnly ? hero.LockClosed : hero.LockOpen}" size="16" class="mx-0 my-1" solid/>
-                        </RadioItem>
-                      </RadioGroup>
-                    </div>
                   </div>
-                  <CodeBlock language="html" code={
-                  `<iframe ` +
-                  `\n  width="${iframeWidth || 800}" `+
-                  `\n  height="${iframeHeight || 600}" ` + 
-                  `${iframeAllowFullscreen ? '\n  allow="fullscreen" ' : ''}` + 
-                  `\n  src="${shareableURL || '[PROVIDE URL ABOVE]'}${shareableURL.includes('?') ? '&' : '?'}` +
-                    `view=${iframeView}&` +
-                    `autobuild=${iframeAutoBuild}&` +
-                    `readonly=${iframeReadOnly}` +
-                  `" ` + 
-                  `\n  title="${cfg.APP_TITLE}">`}>                    
-                  </CodeBlock>
                 </svelte:fragment>
               </AccordionItem>
             </Accordion>

@@ -12,11 +12,11 @@
     <tbody>
       <tr>
         <td>New Script:</td>
-        <td>alt+{key.keyNewDoc} / ctrl+{key.keyNewDoc}</td>
+        <td>alt+{key.keyNewDoc}</td>
       </tr>
       <tr>
         <td>Save Script:</td>
-        <td>alt+{key.keySaveDoc}</td>
+        <td>alt+{key.keySaveDoc} / ctrl+{key.keySaveDoc}</td>
       </tr>
       <tr>
         <td>Save New Script Version:</td>
@@ -31,8 +31,12 @@
         <td>alt+{key.keyArchive}</td>
       </tr>
       <tr>
-        <td>Build (without saving):</td>
+        <td>Build / Play (without saving):</td>
         <td>alt+{key.keyBuild}</td>
+      </tr>
+      <tr>
+        <td>Stop / Clear Status:</td>
+        <td>alt+{key.keyStop}</td>
       </tr>
       <tr>
         <td>View Split:</td>
