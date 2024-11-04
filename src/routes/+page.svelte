@@ -675,7 +675,7 @@
         id="canvasframe" 
         width="800" 
         height="800" 
-        src="./canvasframe.html" 
+        src="./canvasframe" 
         scrolling="no" 
         sandbox="allow-scripts allow-popups"  
         title="canvasframe"> 

@@ -12,4 +12,8 @@ export * from './strings';
 export * from './components';
 export * from './handlers';
 
+export * from './types';
+export * from './lsl_io';
+
+
 // stores, sotage, styles and templates should not be exported from $lib
