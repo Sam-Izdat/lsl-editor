@@ -290,7 +290,6 @@
     } else {
       docHandler.newDoc();
     }
-    await reqBuild();
     await reqResetProg();
   };
 
@@ -346,7 +345,6 @@
     }
     modalStore.close();
     reqRenameDoc(baseFilename ?? '');
-    await reqBuild();
     await reqResetProg();
   };
 
@@ -555,11 +553,15 @@
 
       // window.addEventListener('key-stop-playback', reqClearStopAnimation);
 
+
+      if (Device.isMobile){
+        if (cfg.MOBILE_READONLY) docHandler.disableEditing();
+      }
+      mobileHandler.orientationChange();
+      
       await reqBuild();
       await reqStartAnimation();
 
-      if (Device.isMobile && cfg.MOBILE_READONLY) docHandler.disableEditing();
-      mobileHandler.orientationChange();
     }
   });
 
