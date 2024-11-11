@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { orientationLandscape, currentView, isFullscreen } from '$lib/stores';
 import * as panes from '$lib/panes';
 import { Log } from '$lib';
-import { isReady } from '$lib/stores';
+import { canvasIsReady } from '$lib/stores';
 
 export class MobileHandler {
   constructor(winRef, options = {}) {
@@ -44,7 +44,7 @@ export class MobileHandler {
   }
 
   async orientationChange() {
-    isReady.set(false);
+    canvasIsReady.set(false);
     if (this.landscape && this.winRef.screen.orientation.type.startsWith('portrait')) {
       panes.moveContentToStaging();
       orientationLandscape.set(false);     
@@ -54,7 +54,8 @@ export class MobileHandler {
       else if (this.view == 2) panes.moveContent('ct2', 'cr-full');
       else if (this.view == 3) panes.moveContent('ct3', 'cr-full');
       panes.showView(this.view);
-    } else  {
+      this.layoutChangeCallback();
+    } else if (!this.landscape && this.winRef.screen.orientation.type.startsWith('landscape')) {
       panes.moveContentToStaging();
       orientationLandscape.set(true);
       await tick();
@@ -63,6 +64,7 @@ export class MobileHandler {
       else if (this.view == 2) panes.moveContent('ct2', 'cr-full');
       else if (this.view == 3) panes.moveContent('ct3', 'cr-full');
       panes.showView(this.view);
+      this.layoutChangeCallback();
     }    
   };
 }

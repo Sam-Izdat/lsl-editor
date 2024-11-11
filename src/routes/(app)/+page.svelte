@@ -28,7 +28,8 @@
     orientationLandscape,
     isReadOnly,
     isDark,
-    isReady,
+    canvasIsReady,
+    editorIsReady,
     isPlaying,
   } from '$lib/stores';
 
@@ -106,9 +107,9 @@
   };
 
   const waitForCanvas = () => {
-    if (!$isReady){;
+    if (!$canvasIsReady){;
       return new Promise((resolve) => {
-          const unsubscribe = isReady.subscribe((val) => {
+          const unsubscribe = canvasIsReady.subscribe((val) => {
               if (val === true) {
                   unsubscribe();
                   resolve();
@@ -119,9 +120,29 @@
     return true;
   };
 
+  // const waitForIframeLoad = () => {
+  //   return new Promise((resolve, reject) => {
+  //     if (iframe.contentDocument || iframe.contentWindow) {
+  //       // If iframe is already loaded, resolve immediately
+  //       resolve();
+  //     } else {
+  //       // Otherwise, add a listener to wait until it loads
+  //       iframe.addEventListener('load', () => {
+  //         resolve();
+  //       });
+
+  //       // Optional: Handle errors if the iframe fails to load
+  //       iframe.addEventListener('error', (err) => {
+  //         reject(new Error('Error loading iframe: ' + err));
+  //       });
+  //     }
+  //   });
+  // };
+
   // Global status changing stuff
   const canvasReady = () => {
-    $isReady = true;
+    console.warn('~~RX CANVAS READY');
+    $canvasIsReady = true;
   };
 
   const buildSuccess = () => {
@@ -161,11 +182,13 @@
   let autoBuildTimeoutID: number;
 
   const reqBuild = async () => {
+    console.warn('~~BUILD CALLED');
     Log.clearScriptLog();
     StackTrace.clear();
     let editorVal = monacoEditor.getValue();
 
     await waitForCanvas();
+    console.warn('~~BUILD CALLED - CANVAS AWAITED');
     let canvasframe = document.querySelector("#canvasframe");
     let canvasframeWindow = canvasframe.contentWindow;
 
@@ -179,7 +202,6 @@
   };
 
   const reqStopAnimation = async () => {
-    console.log('~~~REQ STOP ANIM');
     if (!$isPlaying) return;
     $isPlaying = false;
     await waitForCanvas();
@@ -190,7 +212,6 @@
   };
 
   const reqStartAnimation = async () => {
-    console.log('~~~REQ START ANIM');
     if ($isPlaying) return;
     $isPlaying = true;
     await waitForCanvas();
@@ -201,7 +222,6 @@
   };
 
   const reqResetProg = async () => {
-    console.log('~~~REQ RESET');
     Log.clearScriptLog();
     StackTrace.clear();
     await waitForCanvas();
@@ -211,7 +231,9 @@
   };
 
   const handleLayoutChange = async () => {
+    console.warn('~~HANDLE LAYOUT CALLED');
     await waitForCanvas();
+    console.warn('~~HANDLE LAYOUT CALLED - CANVAS AWAITED');
     await reqBuild();
     // iframe gets reloaded and script cache lost --
     // presumably there's some security logic here.
@@ -423,7 +445,7 @@
       document.querySelector('body').setAttribute('data-theme', cfg.APP_THEME);
 
       await waitForEditorInstance(); 
-      $isReady = true;
+      $editorIsReady = true;
       
       // Listen for changes in Monaco editor and update the store
       monacoEditor.onDidChangeModelContent(() => {
@@ -435,9 +457,7 @@
         }
       });
 
-      // Populate panes
-      panes.returnContentToSplit();
-      
+
       // Set up handlers
       docHandler    = new DocHandler(dsCurrentSession, monacoEditor);
       navHandler    = new NavHandler({layoutChangeCallback: handleLayoutChange});
@@ -447,11 +467,6 @@
       // Check if an uploaded file exists in sessionStorage
       const fileData = sessionStorage.getItem('importRequestFile'); 
       sessionStorage.removeItem('importRequestFile');
-      const importRequestView = sessionStorage.getItem('importRequestView');
-      if (importRequestView !== null && +importRequestView <= 3 && +importRequestView >= 0) {
-        $currentView = parseInt(importRequestView);
-        sessionStorage.removeItem('importRequestView');
-      }
       const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
       if (importRequestAutoBuild !== null) {
         isAutoBuild.set(!!+importRequestAutoBuild)
@@ -469,15 +484,14 @@
         contentToLoad = file[0].content || null; 
       }
 
-
       docHandler.newDoc(contentToLoad);
+
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
         // Don't shorten to just arrow - this has to be in curlies... for some reason.
         mobileHandler.orientationChange();
       };
-      mobileHandler.orientationChange();
 
       // Turn off editing by default on mobile devices, because soft keys suck
       if (Device.isMobile && cfg.MOBILE_READONLY) docHandler.disableEditing();
@@ -509,10 +523,23 @@
       window.addEventListener('canvas-ready', canvasReady);
       window.addEventListener('build-success', buildSuccess);
       window.addEventListener('build-error', buildError);
-      
+
       monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
+
+      canvasReady();
+      // console.warn('~~BUILDING, PLAYING');
       await reqBuild();
       await reqStartAnimation();
+
+      // FIXME - shoving these in the back because we can't manipulate views until built
+
+      const importRequestView = sessionStorage.getItem('importRequestView');
+      if (importRequestView !== null && +importRequestView <= 3 && +importRequestView >= 0) {
+        $currentView = parseInt(importRequestView);
+        sessionStorage.removeItem('importRequestView');
+      }
+
+      mobileHandler.orientationChange();
     }
   });
 
@@ -666,15 +693,63 @@
     {#if $orientationLandscape}
     <Splitpanes theme="skeleton-theme" style="width: 100%; height: 100%;">
       <Pane minSize={20} bind:size={$paneSizes.sizeLandscapePaneLeft}>
-        <div id="cr-pane1"/>
+        <div id="cr-pane1">                
+          <div id="ct1">
+            <MonacoEditor editorInstance={monacoEditor} on:init={setEditorInstance} />
+          </div>
+        </div>
       </Pane>
       <Pane minSize={20} bind:size={$paneSizes.sizeLandscapePaneRight}>
         <Splitpanes horizontal={true}>
           <Pane minSize={15} bind:size={$paneSizes.sizeLandscapePaneTopRight}>
-            <div id="cr-pane2" />
+            <div id="cr-pane2">                        
+              <div id="ct2">
+                <iframe 
+                  id="canvasframe" 
+                  width="800" 
+                  height="800" 
+                  src="./canvasframe" 
+                  scrolling="no" 
+                  sandbox="allow-scripts allow-popups"  
+                  title="canvasframe"> 
+              </div>
+            </div>
           </Pane>
           <Pane bind:size={$paneSizes.sizeLandscapePaneBottomRight}>
-            <div id="cr-pane3" />
+            <div id="cr-pane3">
+              <div id="ct3" class="divide-y divide-surface-400/10 !overflow-y-auto">
+                <div class="overflow-x-auto flex p-1">
+                  <button 
+                    title="Save (alt+{km.keySaveDoc} / ctrl+{km.keySaveDoc})" 
+                    class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}" 
+                    on:click={reqSaveDoc}
+                  >
+                    <Icon src="{hero.ArrowDownOnSquare}" size="16" class="mx-0 my-1" solid/>
+                    <span class="hidden lg:inline ml-2">Save</span>
+                  </button> 
+                  <button 
+                    title="Save v{dsCurrentSession.versionCount} (alt+{km.keySaveDocNewVersion})"
+                    class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}"
+                    on:click={reqSaveDocNewVersion}
+                  >
+                    <Icon src="{hero.ArrowDownOnSquareStack}" size="16" class="mx-0 my-1" solid/>
+                    <span class="hidden lg:inline ml-2">Save v{dsCurrentSession.versionCount}</span>
+                  </button>
+                  <div class="ml-auto flex">
+                    <DocTitleBadge renameCallback={reqRenameDoc} switchVersionCallback={reqSwitchDocVersion} />
+                    <DocMenuBadge 
+                      revertCallback={reqRevertDoc} 
+                      resetPanesCallback={reqResetPanes} 
+                      forkCallback={reqForkDoc} 
+                      exportCallback={reqExportFile}
+                    />
+                  </div>
+                </div>
+                <div>        
+                  <StackTraceTable monacoEditor={monacoEditor} />
+                </div>
+              </div>
+            </div>
           </Pane>
         </Splitpanes>
       </Pane>
@@ -695,51 +770,6 @@
   </div>
   <div id="cr-full" class="cr-dynamic hidden" />
   <div id="cr-staging" class="hidden">
-    <div id="ct1">
-      <MonacoEditor editorInstance={monacoEditor} on:init={setEditorInstance} />
-    </div>
-    <div id="ct2">
-      <iframe 
-        id="canvasframe" 
-        width="800" 
-        height="800" 
-        src="./canvasframe" 
-        scrolling="no" 
-        sandbox="allow-scripts allow-popups"  
-        title="canvasframe"> 
-    </div>        
-    <div id="ct3" class="divide-y divide-surface-400/10 !overflow-y-auto">
-      <div class="overflow-x-auto flex p-1">
-        <button 
-          title="Save (alt+{km.keySaveDoc} / ctrl+{km.keySaveDoc})" 
-          class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}" 
-          on:click={reqSaveDoc}
-        >
-          <Icon src="{hero.ArrowDownOnSquare}" size="16" class="mx-0 my-1" solid/>
-          <span class="hidden lg:inline ml-2">Save</span>
-        </button> 
-        <button 
-          title="Save v{dsCurrentSession.versionCount} (alt+{km.keySaveDocNewVersion})"
-          class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}"
-          on:click={reqSaveDocNewVersion}
-        >
-          <Icon src="{hero.ArrowDownOnSquareStack}" size="16" class="mx-0 my-1" solid/>
-          <span class="hidden lg:inline ml-2">Save v{dsCurrentSession.versionCount}</span>
-        </button>
-        <div class="ml-auto flex">
-          <DocTitleBadge renameCallback={reqRenameDoc} switchVersionCallback={reqSwitchDocVersion} />
-          <DocMenuBadge 
-            revertCallback={reqRevertDoc} 
-            resetPanesCallback={reqResetPanes} 
-            forkCallback={reqForkDoc} 
-            exportCallback={reqExportFile}
-          />
-        </div>
-      </div>
-      <div>        
-        <StackTraceTable monacoEditor={monacoEditor} />
-      </div>
-    </div>
   </div>
 </div>
 <style>

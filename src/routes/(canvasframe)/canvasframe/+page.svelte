@@ -3,25 +3,36 @@
   import { cfg } from '$root/webui.config.js';
 
 
-  let wasmScriptLoaded = false;
+  const waitForWasm = async () => {
+    return new Promise((resolve, reject) => {
+      if (window.lslcore?.configure) {
+        resolve();
+        return;
+      }
+
+      const intervalId = setInterval(() => {
+        console.log('~~WAITING');
+        if (window.lslcore?.configure) {
+          clearInterval(intervalId); 
+          resolve(); 
+        }
+      }, 10);
+    });
+  };
+
 
   onMount(async () => {
-
+    console.log('~~ONMOUNT');
+    
     const wasmScript = document.querySelector('script[src="./legitsl/LegitScriptWasm.js"]');
+    if (!wasmScript) {
+      reject(new Error('Script not found.'));
+      return;
+    } else {
+      await waitForWasm(); 
+    }
 
-    // If script is already loaded, just run the initialization function
-    const checkScriptLoaded = () => {
-      if (wasmScript && wasmScript.readyState === 'complete') {
-        console.log('Wasm script is loaded!');
-        initWasm();
-      } else {
-        // Wait for 100ms before checking again
-        setTimeout(checkScriptLoaded, 20);
-      }
-    };
-
-    checkScriptLoaded();
-
+    console.log('~~RESOLVED');
 
     window.__running = false;       // whether animation is running
     window.__script = '';           // script contents
@@ -180,6 +191,7 @@
 
     // transmit
     window.txReady = () => {
+      console.log('~~SENDING TXREADY');
       window.parent.postMessage({ tx: 'sandbox-ready'}, "*");
     };
 
@@ -213,23 +225,15 @@
       }
     };
 
-    window.lslcore.configure("#output-container canvas", "#controls-container");
-    await window.lslcore.init(); 
-    window.txReady();
-
     let elCanvas = document.querySelector('#output')
     elCanvas.width = window.VIEWPORT_WIDTH;
     elCanvas.height = window.VIEWPORT_HEIGHT;
+    
+    window.lslcore.configure("#output-container canvas", "#controls-container");
+    await window.lslcore.init(); 
 
-
-
-
-
-
-
-
-
-
+    window.txReady();
+    // setTimeout(window.txReady, 250);
   });
 </script>
 <style>
