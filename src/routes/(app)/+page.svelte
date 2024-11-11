@@ -526,23 +526,6 @@
 
       docHandler.newDoc(contentToLoad);
 
-      const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
-      if (importRequestAutoBuild !== null) {
-        isAutoBuild.set(!!+importRequestAutoBuild)
-        sessionStorage.removeItem('importRequestAutoBuild');
-      }
-      const importRequestView = sessionStorage.getItem('importRequestView');
-      if (importRequestView !== null && +importRequestView <= 3 && +importRequestView >= 0) {
-        $currentView = parseInt(importRequestView);
-        await tick(); 
-        sessionStorage.removeItem('importRequestView');
-      }
-      const importRequestReadOnly = sessionStorage.getItem('importRequestReadOnly');
-      if (importRequestReadOnly !== null) {
-        !!+importRequestReadOnly ? docHandler.disableEditing() : docHandler.enableEditing();
-        sessionStorage.removeItem('importRequestReadOnly');
-      }
-
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
         // Don't shorten to just arrow - this has to be in curlies... for some reason.
@@ -565,6 +548,22 @@
       await reqBuild();
       await reqStartAnimation();
 
+      const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
+      if (importRequestAutoBuild !== null) {
+        isAutoBuild.set(!!+importRequestAutoBuild)
+        sessionStorage.removeItem('importRequestAutoBuild');
+      }
+      const importRequestView = sessionStorage.getItem('importRequestView');
+      if (importRequestView !== null && +importRequestView <= 3 && +importRequestView >= 0) {
+        $currentView = parseInt(importRequestView);
+        await tick(); 
+        sessionStorage.removeItem('importRequestView');
+      }
+      const importRequestReadOnly = sessionStorage.getItem('importRequestReadOnly');
+      if (importRequestReadOnly !== null) {
+        !!+importRequestReadOnly ? docHandler.disableEditing() : docHandler.enableEditing();
+        sessionStorage.removeItem('importRequestReadOnly');
+      }
     }
   });
 
