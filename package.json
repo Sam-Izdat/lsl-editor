@@ -15,7 +15,7 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "prepare": "node scripts/copy-assets.js"
+    "postinstall": "node scripts/copy-assets.js"
   },
   "devDependencies": {
     "@skeletonlabs/skeleton": "2.10.2",
