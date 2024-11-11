@@ -290,6 +290,7 @@
     } else {
       docHandler.newDoc();
     }
+    await reqBuild();
     await reqResetProg();
   };
 
@@ -345,6 +346,7 @@
     }
     modalStore.close();
     reqRenameDoc(baseFilename ?? '');
+    await reqBuild();
     await reqResetProg();
   };
 
