@@ -212,10 +212,12 @@
 
   const handleLayoutChange = async () => {
     await waitForCanvas();
+    await reqBuild();
     // iframe gets reloaded and script cache lost --
     // presumably there's some security logic here.
     if ($isPlaying) {
-      await reqBuild();
+      await reqStopAnimation();      
+      await reqStartAnimation();
     }
   };
 

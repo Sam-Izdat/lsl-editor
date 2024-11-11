@@ -3,14 +3,30 @@
   import { cfg } from '$root/webui.config.js';
 
 
+  let wasmScriptLoaded = false;
+
   onMount(async () => {
 
+    const wasmScript = document.querySelector('script[src="./legitsl/LegitScriptWasm.js"]');
+
+    // If script is already loaded, just run the initialization function
+    const checkScriptLoaded = () => {
+      if (wasmScript && wasmScript.readyState === 'complete') {
+        console.log('Wasm script is loaded!');
+        initWasm();
+      } else {
+        // Wait for 100ms before checking again
+        setTimeout(checkScriptLoaded, 20);
+      }
+    };
+
+    checkScriptLoaded();
 
 
-    window.lslcore.__running = false;       // whether animation is running
-    window.lslcore.__script = '';           // script contents
-    window.lslcore.__scriptLen = 0;         // length of script (for scope)
-    window.lslcore.__stackTrace = [];       // persists from build-start to build-start
+    window.__running = false;       // whether animation is running
+    window.__script = '';           // script contents
+    window.__scriptLen = 0;         // length of script (for scope)
+    window.__stackTrace = [];       // persists from build-start to build-start
     window.VIEWPORT_WIDTH = 800;    // width of parent UI viewport (max canvas width)
     window.VIEWPORT_HEIGHT = 600;   // height of parent UI viewport (max canvas height)
 
@@ -18,11 +34,11 @@
     console.error = (...e) => console.log(...e); 
 
     // extract pertinent info from stack trace (chromium & FF)
-    window.lslcore.__parseLine = (line) => {
+    window.__parseLine = (line) => {
       const match = line.match(/(?:<anonymous>|eval):(\d+):(\d+)/);
       if (match) {
         const [_, lineno, colno] = match;
-        if (lineno > (window.lslcore.__scriptLen + 1)) return null; // out of range
+        if (lineno > (window.__scriptLen + 1)) return null; // out of range
         const sourceMatch = line.match(/(.+?(?=@))|(?:at\s+)(\w+)/);
         let source = sourceMatch !== null ? sourceMatch[1] || sourceMatch[2] : '';
         if (source == 'eval' || source == '') source = 'root';
@@ -31,17 +47,17 @@
       return null;
     };
 
-    window.lslcore.__processStackLines = (stackLines, err_hash) => {
+    window.__processStackLines = (stackLines, err_hash) => {
       stackLines.forEach(line => {
-        let step = window.lslcore.__parseLine(line);
+        let step = window.__parseLine(line);
         if (step) {
-          window.lslcore.__stackTrace.push(step);
+          window.__stackTrace.push(step);
           window.txStackLine(step[0], parseInt(step[1]), parseInt(step[2]), err_hash);
         }
       });
     };
 
-    window.lslcore.__generateErrorHash = (errorMessage, stack) => {
+    window.__generateErrorHash = (errorMessage, stack) => {
       let str = errorMessage + JSON.stringify(stack);
       let hash = 5381;
       for (let i = 0; i < str.length; i++) {
@@ -53,7 +69,7 @@
     // herein we try to keep the errors piped to the editor and prevent them from bubbling up
     window.onerror = (message, source, lineno, colno, error) => {
       const err = `Unhandled error caught by window.onerror: ${message} @ ${source}, Line: ${lineno}, Column: ${colno}`;
-      const err_hash = window.lslcore.__generateErrorHash(message, error.stack ?? {});
+      const err_hash = window.__generateErrorHash(message, error.stack ?? {});
       window.txError(error.name ?? 'error', message, err_hash);
       console.log(err);
       return true; // (try to) prevent error from propagating to the console
@@ -63,8 +79,8 @@
           const stackLines = e.error.stack.split("\n");
           
           stackLines.forEach(line => {
-            let step = window.lslcore.__parseLine(line);
-            if (step) window.lslcore.__stackTrace.push(step);
+            let step = window.__parseLine(line);
+            if (step) window.__stackTrace.push(step);
             window.txStackLine(step[0], step[1], step[2]);
           });
         }
@@ -78,7 +94,7 @@
     window.onunhandledrejection = (e) => {
       const err = 'caught in onunhandledrejection: ' + e.reason || 'unknown async error';
       console.error(e.reason.stack);
-      const err_hash = window.lslcore.__generateErrorHash(e.reason, {});
+      const err_hash = window.__generateErrorHash(e.reason, {});
       console.log(err);
       // Should be caught, but just to be thorough...
       if (e.reason?.name === 'LegitSLError' && e.reason?.info?.line) {
@@ -89,7 +105,7 @@
         window.txError('PromiseRejection', e.reason, err_hash);
         if (e.reason && e.reason.stack) {
           const stackLines = e.reason.stack.split("\n");
-          window.lslcore.__processStackLines(stackLines, err_hash);
+          window.__processStackLines(stackLines, err_hash);
         }
       }
       e.preventDefault();
@@ -107,19 +123,19 @@
       const tx = e.data.tx;
       switch (tx) {
         case 'harbor-build':
-          window.lslcore.__script = e.data.script;
-          window.lslcore.__stackTrace = [];
-          window.lslcore.__running = true;
+          window.__script = e.data.script;
+          window.__stackTrace = [];
+          window.__running = true;
           window.parent.postMessage({ tx: 'sandbox-build-start' }, e.origin);
-          await window.digest(window.lslcore.__script); // fire-and-forget w/o await, msg below confirms init, not success
+          await window.digest(window.__script); // fire-and-forget w/o await, msg below confirms init, not success
           break;
         case 'harbor-stop':
-          window.lslcore.__running = false;
+          window.__running = false;
           window.lslcore.cancelLoop();
           window.parent.postMessage({ tx: 'sandbox-render-stop' }, e.origin);
           break;
         case 'harbor-start':
-          window.lslcore.__running = true;
+          window.__running = true;
           window.lslcore.executeLoop();
           if (e.data.width && e.data.height){
             // We intentionally don't resize the canvas, and leave that up to the user script:
@@ -135,16 +151,16 @@
         case 'harbor-reset':
           window.lslcore.cancelLoop();       
           await window.lslcore.init();
-          await window.digest(window.lslcore.__script);
-          if (window.lslcore.__running) {
+          await window.digest(window.__script);
+          if (window.__running) {
             window.lslcore.executeLoop();
           }
           break;
         case 'harbor-status':          
           window.parent.postMessage({ tx: 'sandbox-status-report', 
             status: {
-              running: window.lslcore.__running,
-              stackTrace: window.lslcore.__stackTrace
+              running: window.__running,
+              stackTrace: window.__stackTrace
             }
           }, e.origin);
           break;
@@ -180,13 +196,13 @@
     };
 
     window.digest = async (script) => {
-      window.lslcore.__scriptLen = script.split(/\r\n|\r|\n/).length; // lines
-      window.lslcore.__stackTrace = [];
+      window.__scriptLen = script.split(/\r\n|\r|\n/).length; // lines
+      window.__stackTrace = [];
       try { 
         await window.lslcore.update(script);
         window.txBuildSuccess();
       } catch (e) {
-        const err_hash = window.lslcore.__generateErrorHash(e.message, e.stack ?? {});
+        const err_hash = window.__generateErrorHash(e.message, e.stack ?? {});
         if (e.name === 'LegitSLError' && e.info?.line) {
           // window.txErrorFrag(e.info.code, err_hash);
           window.txError(e.name, e.message, err_hash);

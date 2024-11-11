@@ -13,7 +13,7 @@ const destDir = path.join(__dirname, '..', 'static', 'legitsl');
 async function copyAssets() {
   try {
     const files = await fs.readdir(srcDir);
-    const assetFiles = files.filter(file => file.endsWith('.js') || file.endsWith('.wasm') || file.endsWith('.html'));
+    const assetFiles = files.filter(file => file.endsWith('.js') || file.endsWith('.wasm'));
 
     await Promise.all(assetFiles.map(async (file) => {
       await fs.copyFile(path.join(srcDir, file), path.join(destDir, file));
