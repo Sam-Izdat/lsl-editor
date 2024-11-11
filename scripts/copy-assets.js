@@ -23,7 +23,7 @@ if (!fs.existsSync(srcDir)) {
   }
 } else {
   console.log(`"${srcDir}" found. Proceeding with postinstall tasks.`);
-  execSync(`ls -l ${srcDir}`, { stdio: 'inherit' });
+  // execSync(`ls -l ${srcDir}`, { stdio: 'inherit' });
 }
 
 async function copyAssets() {

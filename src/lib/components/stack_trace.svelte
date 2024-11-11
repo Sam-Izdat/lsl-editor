@@ -186,9 +186,6 @@
   });
 </script>
 
-<!-- Iterate through stack traces, displaying each in a table -->
-
-
 <Accordion>
   <AccordionItem open padding="py-1 px-px">
     <svelte:fragment slot="lead">

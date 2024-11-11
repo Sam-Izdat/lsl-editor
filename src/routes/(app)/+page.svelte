@@ -141,8 +141,12 @@
 
   // Global status changing stuff
   const canvasReady = () => {
+    if ($canvasIsReady) return;
     console.warn('~~RX CANVAS READY');
     $canvasIsReady = true;
+    let canvasframe = document.querySelector("#canvasframe");
+    let canvasframeWindow = canvasframe.contentWindow;
+    harbor.txReadyAck(canvasframeWindow);
   };
 
   const buildSuccess = () => {
@@ -219,6 +223,14 @@
     let canvasframeWindow = canvasframe.contentWindow;
     harbor.txStart(canvasframeWindow);
     await waitForEvent('render-started');
+  };
+
+  const reqPlayPause = async () => {
+    if ($isPlaying) {
+      reqStopAnimation();
+    } else {
+      reqStartAnimation();
+    }
   };
 
   const reqResetProg = async () => {
@@ -457,44 +469,16 @@
         }
       });
 
+      // Custom events
+      window.addEventListener('canvas-ready', canvasReady);
+      window.addEventListener('build-success', buildSuccess);
+      window.addEventListener('build-error', buildError);
 
       // Set up handlers
       docHandler    = new DocHandler(dsCurrentSession, monacoEditor);
       navHandler    = new NavHandler({layoutChangeCallback: handleLayoutChange});
       screenHandler = new ScreenHandler(window);
       mobileHandler = new MobileHandler(window, {layoutChangeCallback: handleLayoutChange});
-
-      // Check if an uploaded file exists in sessionStorage
-      const fileData = sessionStorage.getItem('importRequestFile'); 
-      sessionStorage.removeItem('importRequestFile');
-      const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
-      if (importRequestAutoBuild !== null) {
-        isAutoBuild.set(!!+importRequestAutoBuild)
-        sessionStorage.removeItem('importRequestAutoBuild');
-      }
-      const importRequestReadOnly = sessionStorage.getItem('importRequestReadOnly');
-      if (importRequestReadOnly !== null) {
-        !!+importRequestReadOnly ? docHandler.disableEditing() : docHandler.enableEditing();
-        sessionStorage.removeItem('importRequestReadOnly');
-      }
-
-      let contentToLoad; 
-      if (fileData) {
-        const file = JSON.parse(fileData);
-        contentToLoad = file[0].content || null; 
-      }
-
-      docHandler.newDoc(contentToLoad);
-
-
-      // Listen for orientation changes and do initial check
-      window.screen.orientation.onchange = () => {
-        // Don't shorten to just arrow - this has to be in curlies... for some reason.
-        mobileHandler.orientationChange();
-      };
-
-      // Turn off editing by default on mobile devices, because soft keys suck
-      if (Device.isMobile && cfg.MOBILE_READONLY) docHandler.disableEditing();
 
       harbor.rxListen();
 
@@ -509,7 +493,7 @@
       resizeObserver.observe(viewportEl);
 
 
-      // Custom events from keybind
+      // Keybind
       observeKeyboard();
       window.addEventListener('key-switch-view', navHandler.switchViewEvent);
       window.addEventListener('key-save-document', reqSaveDoc);
@@ -518,28 +502,53 @@
       window.addEventListener('key-rename-document', reqRenameDoc);
       window.addEventListener('key-archive-shelf', reqOpenArchiveDrawer);
       window.addEventListener('key-build-script', reqBuild);
-      window.addEventListener('key-stop-playback', reqClearStopAnimation);
+      window.addEventListener('key-play-pause', reqPlayPause);
+      window.addEventListener('key-reset-prog', reqResetProg);
+      // window.addEventListener('key-stop-playback', reqClearStopAnimation);
       
-      window.addEventListener('canvas-ready', canvasReady);
-      window.addEventListener('build-success', buildSuccess);
-      window.addEventListener('build-error', buildError);
-
-      monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
-
-      canvasReady();
-      // console.warn('~~BUILDING, PLAYING');
-      await reqBuild();
-      await reqStartAnimation();
-
-      // FIXME - shoving these in the back because we can't manipulate views until built
-
+      
+      // Check if an uploaded file exists in sessionStorage
+      const fileData = sessionStorage.getItem('importRequestFile'); 
+      sessionStorage.removeItem('importRequestFile');
+      const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
+      if (importRequestAutoBuild !== null) {
+        isAutoBuild.set(!!+importRequestAutoBuild)
+        sessionStorage.removeItem('importRequestAutoBuild');
+      }
       const importRequestView = sessionStorage.getItem('importRequestView');
       if (importRequestView !== null && +importRequestView <= 3 && +importRequestView >= 0) {
         $currentView = parseInt(importRequestView);
         sessionStorage.removeItem('importRequestView');
       }
+      const importRequestReadOnly = sessionStorage.getItem('importRequestReadOnly');
+      if (importRequestReadOnly !== null) {
+        !!+importRequestReadOnly ? docHandler.disableEditing() : docHandler.enableEditing();
+        sessionStorage.removeItem('importRequestReadOnly');
+      }
 
+
+      let contentToLoad; 
+      if (fileData) {
+        const file = JSON.parse(fileData);
+        contentToLoad = file[0].content || null; 
+      }
+
+      docHandler.newDoc(contentToLoad);
+
+      // Listen for orientation changes and do initial check
+      window.screen.orientation.onchange = () => {
+        // Don't shorten to just arrow - this has to be in curlies... for some reason.
+        mobileHandler.orientationChange();
+      };
       mobileHandler.orientationChange();
+
+      // Turn off editing by default on mobile devices, because soft keys suck
+      if (Device.isMobile && cfg.MOBILE_READONLY) docHandler.disableEditing();
+
+      monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
+
+      await reqBuild();
+      await reqStartAnimation();
     }
   });
 
@@ -555,7 +564,9 @@
       window.removeEventListener('key-rename-document', reqRenameDoc);
       window.removeEventListener('key-archive-shelf', reqOpenArchiveDrawer);
       window.removeEventListener('key-build-script', reqBuild);
-      window.removeEventListener('key-stop-playback', reqClearStopAnimation);
+      window.removeEventListener('key-play-pause', reqPlayPause);
+      window.removeEventListener('key-reset-prog', reqResetProg);
+      // window.removeEventListener('key-stop-playback', reqClearStopAnimation);
 
       window.removeEventListener('canvas-ready', canvasReady);
       window.removeEventListener('build-success', buildSuccess);

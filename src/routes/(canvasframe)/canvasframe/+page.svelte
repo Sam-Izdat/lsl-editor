@@ -2,6 +2,7 @@
   import { onDestroy, onMount, tick } from 'svelte';
   import { cfg } from '$root/webui.config.js';
 
+  let boardcastReady: ReturnType<typeof setInterval>;
 
   const waitForWasm = async () => {
     return new Promise((resolve, reject) => {
@@ -11,7 +12,6 @@
       }
 
       const intervalId = setInterval(() => {
-        console.log('~~WAITING');
         if (window.lslcore?.configure) {
           clearInterval(intervalId); 
           resolve(); 
@@ -167,6 +167,11 @@
             window.lslcore.executeLoop();
           }
           break;
+        case 'harbor-ready-ack':
+          console.log('***REC READY ACK');
+          clearInterval(boardcastReady);
+          console.log('***READY INTERVAL CLEARED');
+          break;
         case 'harbor-status':          
           window.parent.postMessage({ tx: 'sandbox-status-report', 
             status: {
@@ -191,8 +196,9 @@
 
     // transmit
     window.txReady = () => {
-      console.log('~~SENDING TXREADY');
-      window.parent.postMessage({ tx: 'sandbox-ready'}, "*");
+      boardcastReady = setInterval(() => {
+        window.parent.postMessage({ tx: 'sandbox-ready'}, "*");
+      }, 10);
     };
 
     window.txBuildSuccess = () => {

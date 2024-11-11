@@ -43,10 +43,16 @@ export const observeKeyboard = () => {
       window.dispatchEvent(new CustomEvent('key-build-script'));
     }
 
-    // ALT + key for stop playback
-    if (event.altKey && event.key === keys.keyStop) {
+    // ALT + key for play / pause animation
+    if (event.altKey && event.key === keys.keyPlayPause) {
       event.preventDefault();
-      window.dispatchEvent(new CustomEvent('key-stop-playback'));
+      window.dispatchEvent(new CustomEvent('key-play-pause'));
+    }
+
+    // ALT + key for reset animation
+    if (event.altKey && event.key === keys.keyResetProg) {
+      event.preventDefault();
+      window.dispatchEvent(new CustomEvent('key-reset-prog'));
     }
 
     // Switch views with ALT + tilde, 1, 2, 3, etc keys

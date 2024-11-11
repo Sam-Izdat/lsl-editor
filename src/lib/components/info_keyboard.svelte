@@ -3,7 +3,7 @@
 </script>
 
 <div class="table-container w-full shadow-xl">
-  <table class="table table-compact table-hover">
+  <table class="table table-hover">
     <thead>
       <tr>
         <td colspan="2">Keyboard shortcuts</td>
@@ -11,48 +11,52 @@
     </thead>
     <tbody>
       <tr>
-        <td>New Script:</td>
-        <td>alt+{key.keyNewDoc}</td>
+        <td class="!pt-1 !pb-1">New Script:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyNewDoc}</td>
       </tr>
       <tr>
-        <td>Save Script:</td>
-        <td>alt+{key.keySaveDoc} / ctrl+{key.keySaveDoc}</td>
+        <td class="!pt-1 !pb-1">Save Script:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keySaveDoc} / ctrl+{key.keySaveDoc}</td>
       </tr>
       <tr>
-        <td>Save New Script Version:</td>
-        <td>alt+{key.keySaveDocNewVersion}</td>
+        <td class="!pt-1 !pb-1">Save New Script Version:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keySaveDocNewVersion}</td>
       </tr>
       <tr>
-        <td>Rename Script:</td>
-        <td>alt+{key.keyRenameDoc}</td>
+        <td class="!pt-1 !pb-1">Rename Script:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyRenameDoc}</td>
       </tr>
       <tr>
-        <td>Open Achive (save/load):</td>
-        <td>alt+{key.keyArchive}</td>
+        <td class="!pt-1 !pb-1">Open Achive (save/load):</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyArchive}</td>
       </tr>
       <tr>
-        <td>Build / Play (without saving):</td>
-        <td>alt+{key.keyBuild}</td>
+        <td class="!pt-1 !pb-1">Build:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyBuild}</td>
       </tr>
       <tr>
-        <td>Stop / Clear Status:</td>
-        <td>alt+{key.keyStop}</td>
+        <td class="!pt-1 !pb-1">Play / Pause:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyPlayPause}</td>
       </tr>
       <tr>
-        <td>View Split:</td>
-        <td>alt+{key.keyViewSplit}</td>
+        <td class="!pt-1 !pb-1">Reset Program:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyResetProg}</td>
       </tr>
       <tr>
-        <td>View Code:</td>
-        <td>alt+{key.keyViewCode}</td>
+        <td class="!pt-1 !pb-1">View Split:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyViewSplit}</td>
       </tr>
       <tr>
-        <td>View Canvas:</td>
-        <td>alt+{key.keyViewCanvas}</td>
+        <td class="!pt-1 !pb-1">View Code:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyViewCode}</td>
       </tr>
       <tr>
-        <td>View Controls:</td>
-        <td>alt+{key.keyViewControls}</td>
+        <td class="!pt-1 !pb-1">View Canvas:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyViewCanvas}</td>
+      </tr>
+      <tr>
+        <td class="!pt-1 !pb-1">View Controls:</td>
+        <td class="!pt-1 !pb-1">alt+{key.keyViewControls}</td>
       </tr>
     </tbody>
   </table>

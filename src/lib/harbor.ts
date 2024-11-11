@@ -103,6 +103,10 @@ export const txReset = (sandbox: Window) => {
   sandbox.postMessage({ tx: 'harbor-reset'}, "*");
 };
 
+export const txReadyAck = (sandbox: Window) => {
+  sandbox.postMessage({ tx: 'harbor-ready-ack' }, "*");
+};
+
 export const txStatus = (sandbox: Window) => {
   sandbox.postMessage({ tx: 'harbor-status' }, "*");
 };
