@@ -128,13 +128,11 @@
     Log.scriptSuccess("build completed");
     const flashCol = $isDark ? cfg.BUILD_COL_SUCCESS[0] : cfg.BUILD_COL_SUCCESS[1];
     pulseEditorBackground(flashCol, cfg.BUILD_FLASH_DUR);
-    $isPlaying = true;
   };
 
   const buildError = () => {
     const flashCol = $isDark ? cfg.BUILD_COL_FAILURE[0] : cfg.BUILD_COL_FAILURE[1];
     pulseEditorBackground(flashCol, cfg.BUILD_FLASH_DUR);
-    $isPlaying = false;
   };
 
   // UI actions   
@@ -163,8 +161,8 @@
   let autoBuildTimeoutID: number;
 
   const reqBuild = async () => {
-    await reqClearStopAnimation();
-    let buildSuccessful = true;
+    Log.clearScriptLog();
+    StackTrace.clear();
     let editorVal = monacoEditor.getValue();
 
     await waitForCanvas();
@@ -181,6 +179,7 @@
   };
 
   const reqStopAnimation = async () => {
+    console.log('~~~REQ STOP ANIM');
     if (!$isPlaying) return;
     $isPlaying = false;
     await waitForCanvas();
@@ -190,9 +189,30 @@
     await waitForEvent('render-stopped');
   };
 
+  const reqStartAnimation = async () => {
+    console.log('~~~REQ START ANIM');
+    if ($isPlaying) return;
+    $isPlaying = true;
+    await waitForCanvas();
+    let canvasframe = document.querySelector("#canvasframe");
+    let canvasframeWindow = canvasframe.contentWindow;
+    harbor.txStart(canvasframeWindow);
+    await waitForEvent('render-started');
+  };
+
+  const reqResetProg = async () => {
+    console.log('~~~REQ RESET');
+    Log.clearScriptLog();
+    StackTrace.clear();
+    await waitForCanvas();
+    let canvasframe = document.querySelector("#canvasframe");
+    let canvasframeWindow = canvasframe.contentWindow;
+    harbor.txReset(canvasframeWindow);
+  };
+
   const handleLayoutChange = async () => {
     await waitForCanvas();
-    // Can't do txRestart because iframe gets reloaded and script cache lost --
+    // iframe gets reloaded and script cache lost --
     // presumably there's some security logic here.
     if ($isPlaying) {
       await reqBuild();
@@ -393,7 +413,7 @@
   };
 
   // When browser stuff is available
-  onMount(async () => {      
+  onMount(async () => {
     if (typeof ResizeObserver === 'undefined') {
       const { ResizeObserver } = await import('resize-observer-polyfill');
     }
@@ -487,8 +507,10 @@
       window.addEventListener('canvas-ready', canvasReady);
       window.addEventListener('build-success', buildSuccess);
       window.addEventListener('build-error', buildError);
-
+      
+      monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
       await reqBuild();
+      await reqStartAnimation();
     }
   });
 
@@ -571,8 +593,12 @@
         <Icon src="{hero.AdjustmentsHorizontal}" size="16" style="margin: 4px auto;" solid/>
       </svelte:fragment>
     </AppRailTile>
-    <hr classs="hr m-1"/>
-    <AnchorScriptStatus buildCallback={reqBuild} stopCallback={reqStopAnimation} />
+    <AnchorScriptStatus 
+      buildCallback={reqBuild} 
+      startCallback={reqStartAnimation} 
+      stopCallback={reqStopAnimation} 
+      resetCallback={reqResetProg}
+    />
     <AppRailAnchor 
       href="#" 
       title="Toggle Auto-Build" 

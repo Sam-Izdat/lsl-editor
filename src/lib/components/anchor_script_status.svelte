@@ -4,10 +4,14 @@
   import { popup } from '@skeletonlabs/skeleton';
   import { scriptErrorLog } from '$lib/stores'; // Store for message queue
   import { AppRailAnchor } from '@skeletonlabs/skeleton';
+
+  import { isPlaying } from '$lib/stores';
   import * as km from '$lib/keymap';
 
   export let buildCallback = () => {};
+  export let startCallback = () => {};
   export let stopCallback = () => {};
+  export let resetCallback = () => {};
 
   type MessageStatus = 'info' | 'success' | 'warning' | 'error';
 
@@ -40,25 +44,20 @@
   let ready         = false;
   let scriptStatus  = 0;
   let statusClass   = '';
-  let activeIcon    = hero.Play;
+  $: activeIcon     = $isPlaying ? hero.Pause : hero.Play;
   
   const unsubscribe = Log.getInstance().scriptStatus.subscribe(status => {
-    if (ready && (status & Log.ScriptStatus.ERROR)) stopCallback();
 
     scriptStatus = status;
     statusClass = '';
-    activeIcon = hero.Play;
     if (status & Log.ScriptStatus.SUCCESS) {
       statusClass = 'bg-success-500';
-      activeIcon = hero.Stop;
     }
     if (status & Log.ScriptStatus.WARNING) {
       statusClass = 'bg-warning-500';
-      activeIcon = hero.ExclamationTriangle;
     }
     if (status & Log.ScriptStatus.ERROR) {
       statusClass = 'bg-error-500';
-      activeIcon = hero.ExclamationCircle;
     }
 
   });
@@ -78,25 +77,36 @@
   import * as ico from '$lib/components/icons';
 </script>
 
+<hr classs="hr m-1"/>
+<AppRailAnchor 
+  href="#" 
+  title="Resume / Pause" 
+  style="display:block;"
+  on:click={$isPlaying ? stopCallback : startCallback}
+>
+  <Icon src="{activeIcon}" size="16" style="margin: 4px auto;" solid />
+</AppRailAnchor>
+<AppRailAnchor 
+  href="#" 
+  title="Reset Program" 
+  on:click={resetCallback} 
+  class="display-block">
+  <!-- <Icon src="{hero.ArrowPathRoundedSquare}" size="16" style="margin: 4px auto;" solid/> -->
+  <CustomIcon src={ico.Backward} size='16' class="inline-block" />
+</AppRailAnchor>
+<hr classs="hr m-1"/>
 <!-- Need wrapper because AppRailAnchor can't use popup -->
 <div class="m-0 p-0" 
   use:popup={{ event: 'hover', target: 'error-popup', placement: 'right' }}
 >
 <AppRailAnchor 
   href="#" 
-  title="Build / Stop (alt+{km.keyBuild})" 
+  title="Build (alt+{km.keyBuild})" 
   class={statusClass} 
   style="display:block;"
-  on:click={() => {
-    if(scriptStatus & Log.ScriptStatus.SUCCESS) {
-      stopCallback();
-      Log.clearScriptLog();       
-    } else {
-      buildCallback();
-    }
-  }}
+  on:click={buildCallback}
 >
-  <Icon src="{activeIcon}" size="16" style="margin: 4px auto;" solid />
+  <Icon src="{hero.ArrowTurnDownLeft}" size="16" style="margin: 4px auto;" solid />
   <div 
     class="card place-content-stretch text-left font-normal p-1 max-w-72 bg-gradient-to-br variant-gradient-error-warning shadow shadow-error-900" 
     data-popup="error-popup"

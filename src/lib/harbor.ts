@@ -25,6 +25,10 @@ export const rxSandbox = (e: Event) => {
       Log.debug('Sandbox build started.')
       window.dispatchEvent(new CustomEvent('build-started'));
       break;
+    case 'sandbox-render-start':
+      Log.debug('Sanbox render started.');
+      window.dispatchEvent(new CustomEvent('render-started'));
+      break;
     case 'sandbox-render-stop':
       Log.debug('Sanbox render stopped.');
       window.dispatchEvent(new CustomEvent('render-stopped'));
@@ -75,6 +79,8 @@ export const rxSandbox = (e: Event) => {
 
 // transmit
 export const txBuild = (sandbox: Window, script: string, width: number = 0, height: number = 0) => {
+
+  Log.warning('**HARBOR BUILD TX**');
   sandbox.postMessage({ tx: 'harbor-build', script: script, width: width, height: height }, "*");
   window.dispatchEvent(new CustomEvent('build-start', {
     detail: {
@@ -89,8 +95,12 @@ export const txStop = (sandbox: Window) => {
   sandbox.postMessage({ tx: 'harbor-stop' }, "*");
 };
 
-export const txRestart = (sandbox: Window, width: number, height: number) => {
-  sandbox.postMessage({ tx: 'harbor-restart', width: width, height: height }, "*");
+export const txStart = (sandbox: Window) => {
+  sandbox.postMessage({ tx: 'harbor-start' }, "*");
+};
+
+export const txReset = (sandbox: Window) => {
+  sandbox.postMessage({ tx: 'harbor-reset'}, "*");
 };
 
 export const txStatus = (sandbox: Window) => {

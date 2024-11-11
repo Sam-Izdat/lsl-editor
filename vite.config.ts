@@ -9,5 +9,9 @@ export default defineConfig({
     __APP_NAME__: JSON.stringify(pkg.name),
     __APP_VERSION__: JSON.stringify(pkg.version),
     __BUILD_TYPE__: JSON.stringify(process.env.BUILD_TYPE)
-  }
+  },
+  optimizeDeps: {
+    exclude: ['./src/lib/vendor/LegitScriptWasm.js', './src/lib/vendor/LegitScriptWasm.js']
+  },
+  ssr: { noExternal: ['./src/lib/vendor/LegitScriptWasm.js'] }
 });

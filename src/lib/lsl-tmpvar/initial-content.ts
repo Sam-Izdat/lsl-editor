@@ -1,4 +1,5 @@
-export const strInitialEditorContents = `[declaration: "complex"]
+export const demoContent = `
+[declaration: "complex"]
 {{
   vec2 complex_sqr(vec2 z) { return vec2(z[0] * z[0] - z[1] * z[1], z[1] * z[0] * 2.); }
 }}
@@ -119,4 +120,26 @@ void RenderGraphMain()
   Text("Fps: " + GetSmoothFps());
   Text("dims: " + sc.GetSize().x + ", " + sc.GetSize().y);
 }}
-`;
+`
+
+export async function initialContent(): Promise<string> {
+  const url = new URL(window.location.toString())
+  const github = url.searchParams.get("gh")
+  if (github) {
+    try {
+      const parts = github.split("/")
+      const user = parts.shift()
+      const repo = parts.shift()
+      const rest = parts.join("/")
+      const ref: string = url.searchParams.get("ref") || "master"
+      const req = await fetch(
+        `https://raw.githubusercontent.com/${user}/${repo}/refs/heads/${ref}/${rest}`
+      )
+      return await req.text()
+    } catch {
+      return demoContent
+    }
+  }
+
+  return demoContent
+}

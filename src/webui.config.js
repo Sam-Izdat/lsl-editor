@@ -10,29 +10,29 @@ export const cfg = {
 
   // GENERAL
   //------------------
-  APP_TITLE:        'LegitSL Editor',
-  APP_SHORT_NAME:   'LSLE',
-  APP_DESCRIPTION:  'Web-based editor for LegitSL',  
-  APP_THEME:        'vintage', // skeleton UI theme
+  APP_TITLE:          'LegitSL Editor',
+  APP_SHORT_NAME:     'LSLE',
+  APP_DESCRIPTION:    'Web-based editor for LegitSL',  
+  APP_THEME:          'vintage', // skeleton UI theme
 
   // LOGGING
   //------------------
-  LOG_LEVEL_DEV:     'DEBUG',
-  LOG_LEVEL_PROD:    'ERROR',
-  TRACE_LEVEL_DEV:   'ERROR',
-  TRACE_LEVEL_PROD:  'CRITICAL',
+  LOG_LEVEL_DEV:      'DEBUG',
+  LOG_LEVEL_PROD:     'ERROR',
+  TRACE_LEVEL_DEV:    'ERROR',
+  TRACE_LEVEL_PROD:   'CRITICAL',
 
   // PWA
   //------------------
-  PWA_START_URL:     APP_HOST_PATH,
-  PWA_SCOPE:         APP_HOST_PATH,
-  PWA_FILE_EXT:      '.lsl',
-  PWA_FILE_MIME_TYPE:'application/x-legitsl',
-  PWA_FILE_ACTION:   APP_HOST_PATH + 'open-file',
-  PWA_URL_PATTERN:   'legitsl://*',
-  PWA_THEME_COLOR:   '#3B4762', // theme color for app status/title bars etc
-  PWA_BG_COLOR:      '#3B4762', // splash screen background
-  PWA_ORIENTATION:   'any',     // setting 'landscape' will force PWA into landscape mode at all times
+  PWA_START_URL:      APP_HOST_PATH,
+  PWA_SCOPE:          APP_HOST_PATH,
+  PWA_FILE_EXT:       '.lsl',
+  PWA_FILE_MIME_TYPE: 'application/x-legitsl',
+  PWA_FILE_ACTION:    APP_HOST_PATH + 'open-file',
+  PWA_URL_PATTERN:    'legitsl://*',
+  PWA_THEME_COLOR:    '#3B4762', // theme color for app status/title bars etc
+  PWA_BG_COLOR:       '#3B4762', // splash screen background
+  PWA_ORIENTATION:    'any',     // setting 'landscape' will force PWA into landscape mode at all times
 
   // MISC OPTIONS
   //------------------

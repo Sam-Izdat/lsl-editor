@@ -26,7 +26,7 @@
   viewBox={icon.viewBox}
   fill="none"
   aria-hidden="true"
-  style="margin: 2px auto; vertical-align: middle;"
+  style="margin: 2px auto;"
   {...$$restProps}
 >
   {#each icon?.path ?? [] as a}

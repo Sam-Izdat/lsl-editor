@@ -1,5 +1,5 @@
 import type {
-  ivec2,
+  uvec2,
   LegitScriptContextRequest,
   LegitScriptContextInput,
   GPUState,
@@ -8,18 +8,21 @@ import type {
   LegitScriptBlendModes} from "./types";
 
 import type {
-  ImageCache,
+  ImageCache
+} from "./image-cache";
+
+import {
   ImageCacheGetImage,
   ImageCacheGetSize,
   ImageCacheStartFrame,
-  ImageCacheProcessRequest} from "./image_cache";
+  ImageCacheProcessRequest} from "./image-cache";
 
-import { UIState } from "./immediate_ui";
+import { UIState } from "./immediate-ui";
 
 export function ProcessScriptRequests(
   uiState : UIState,
   imageCache : ImageCache,
-  swapchainSize : ivec2,
+  swapchainSize : uvec2,
   gl : WebGL2RenderingContext,
   contextRequests : LegitScriptContextRequest[]) : LegitScriptContextInput[]
 {
@@ -32,7 +35,7 @@ export function ProcessScriptRequests(
   ImageCacheProcessRequest(
     gl,
     imageCache,
-    {id : 0, pixel_format : 'rgba8', size : swapchainSize, type : 'CachedImageRequest'},
+    {id : 0, pixel_format : 'rgba16f', size : swapchainSize, type : 'CachedImageRequest'},
     console.error)
 
   for(const request of contextRequests){
