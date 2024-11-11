@@ -517,6 +517,15 @@
       // Check if an uploaded file exists in sessionStorage
       const fileData = sessionStorage.getItem('importRequestFile'); 
       sessionStorage.removeItem('importRequestFile');
+
+      let contentToLoad; 
+      if (fileData) {
+        const file = JSON.parse(fileData);
+        contentToLoad = file[0].content || null; 
+      }
+
+      docHandler.newDoc(contentToLoad);
+
       const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
       if (importRequestAutoBuild !== null) {
         isAutoBuild.set(!!+importRequestAutoBuild)
@@ -532,16 +541,7 @@
         !!+importRequestReadOnly ? docHandler.disableEditing() : docHandler.enableEditing();
         sessionStorage.removeItem('importRequestReadOnly');
       }
-
-
-      let contentToLoad; 
-      if (fileData) {
-        const file = JSON.parse(fileData);
-        contentToLoad = file[0].content || null; 
-      }
-
-      docHandler.newDoc(contentToLoad);
-
+      
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
         // Don't shorten to just arrow - this has to be in curlies... for some reason.
