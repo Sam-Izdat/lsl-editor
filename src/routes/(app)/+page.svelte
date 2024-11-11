@@ -289,8 +289,7 @@
     } else {
       docHandler.newDoc();
     }
-    Log.clearScriptLog();
-    StackTrace.clear();
+    await reqResetProg();
   };
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
@@ -311,7 +310,10 @@
       drawerStore.close();
     }
     // wait for pane animation to complete
-    setTimeout(reqBuild, 350);
+    setTimeout(async () => {
+      await reqBuild();
+      await reqResetProg();
+    }, 350);
   };
 
   const reqForkDoc = async () => {
@@ -326,8 +328,7 @@
       docHandler.forkDoc();
     }
     reqRenameDoc();
-    Log.clearScriptLog();
-    StackTrace.clear();
+    await reqResetProg();
   };
 
   const reqImportFile = async (content: string, baseFilename?: string) => {
@@ -343,8 +344,7 @@
     }
     modalStore.close();
     reqRenameDoc(baseFilename ?? '');
-    Log.clearScriptLog();
-    StackTrace.clear();
+    await reqResetProg();
   };
 
   const reqExportFile = () => {
@@ -472,12 +472,6 @@
           autoBuildTimeoutID = setTimeout(reqBuild, cfg.AUTOBUILD_DELAY);
         }
       });
-
-      // Custom events
-      window.addEventListener('canvas-ready', canvasReady);
-      window.addEventListener('build-success', buildSuccess);
-      window.addEventListener('build-error', buildError);
-
       // Set up handlers
       docHandler    = new DocHandler(dsCurrentSession, monacoEditor);
       navHandler    = new NavHandler({layoutChangeCallback: handleLayoutChange});
@@ -497,20 +491,6 @@
       resizeObserver.observe(viewportEl);
 
 
-      // Keybind
-      observeKeyboard();
-      window.addEventListener('key-switch-view', navHandler.switchViewEvent);
-      window.addEventListener('key-save-document', reqSaveDoc);
-      window.addEventListener('key-save-document-new-version', reqSaveDocNewVersion);
-      window.addEventListener('key-new-document', reqNewDoc);
-      window.addEventListener('key-rename-document', reqRenameDoc);
-      window.addEventListener('key-archive-shelf', reqOpenArchiveDrawer);
-      window.addEventListener('key-build-script', reqBuild);
-      window.addEventListener('key-play-pause', reqPlayPause);
-      window.addEventListener('key-reset-prog', reqResetProg);
-      // window.addEventListener('key-stop-playback', reqClearStopAnimation);
-      
-      
       // Check if an uploaded file exists in sessionStorage
       const fileData = sessionStorage.getItem('importRequestFile'); 
       sessionStorage.removeItem('importRequestFile');
@@ -551,6 +531,26 @@
 
       monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
 
+
+      // Custom events
+      window.addEventListener('canvas-ready', canvasReady);
+      window.addEventListener('build-success', buildSuccess);
+      window.addEventListener('build-error', buildError);
+
+      // Keybind
+      observeKeyboard();
+      window.addEventListener('key-switch-view', navHandler.switchViewEvent);
+      window.addEventListener('key-save-document', reqSaveDoc);
+      window.addEventListener('key-save-document-new-version', reqSaveDocNewVersion);
+      window.addEventListener('key-new-document', reqNewDoc);
+      window.addEventListener('key-rename-document', reqRenameDoc);
+      window.addEventListener('key-archive-shelf', reqOpenArchiveDrawer);
+      window.addEventListener('key-build-script', reqBuild);
+      window.addEventListener('key-play-pause', reqPlayPause);
+      window.addEventListener('key-reset-prog', reqResetProg);
+      // window.addEventListener('key-stop-playback', reqClearStopAnimation);
+      
+      
       await reqBuild();
       await reqStartAnimation();
     }
