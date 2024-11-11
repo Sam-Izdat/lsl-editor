@@ -78,7 +78,7 @@
 
 <div class="overflow-x-auto flex p-1 items-center justify-center">
   <button 
-    title="Save (alt+{km.keySaveDoc} / ctrl+{km.keySaveDoc})" 
+    title="Save (Alt+{km.keySaveDoc} / Ctrl+{km.keySaveDoc})" 
     class="badge m-1 variant-ghost-primary" 
     on:click={saveDocCallback}
   >
@@ -86,7 +86,7 @@
     <span class="hidden lg:inline ml-2">Save</span>
   </button> 
   <button 
-    title="Save New Version (alt+{km.keySaveDocNewVersion})"
+    title="Save New Version (Alt+{km.keySaveDocNewVersion})"
     class="badge m-1 variant-ghost-primary"
     on:click={saveDocNewVersionCallback}
   >

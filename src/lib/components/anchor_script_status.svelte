@@ -80,7 +80,7 @@
 <hr classs="hr m-1"/>
 <AppRailAnchor 
   href="#" 
-  title="Resume / Pause" 
+  title="Play / Pause (Alt+{km.keyPlayPause})" 
   style="display:block;"
   on:click={$isPlaying ? stopCallback : startCallback}
 >
@@ -88,7 +88,7 @@
 </AppRailAnchor>
 <AppRailAnchor 
   href="#" 
-  title="Reset Program" 
+  title="Reset Program (Alt+{km.keyResetProg})" 
   on:click={resetCallback} 
   class="display-block">
   <!-- <Icon src="{hero.ArrowPathRoundedSquare}" size="16" style="margin: 4px auto;" solid/> -->
@@ -101,7 +101,7 @@
 >
 <AppRailAnchor 
   href="#" 
-  title="Build (alt+{km.keyBuild})" 
+  title="Build (Alt+{km.keyBuild})" 
   class={statusClass} 
   style="display:block;"
   on:click={buildCallback}

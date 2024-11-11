@@ -50,7 +50,7 @@
 {#if $isDark}
 <div class="shadow-[0_2px_6px_rgba(0,0,0,0.4)] p-0 m-1 inline-block {savedStatusClasses}">
   <button 
-    title="Rename (alt+{km.keyRenameDoc})" 
+    title="Rename (Alt+{km.keyRenameDoc})" 
     class="badge m-0 p-2 relative inline-block truncate overflow-hidden text-ellipsis whitespace-nowrap text-left max-w-80" 
     on:click={renameCallback} 
     style="
@@ -68,7 +68,7 @@
 {:else}
 <div class="shadow-[0_2px_6px_rgba(1,0,0,0.4)] p-0 m-1 inline-block {savedStatusClasses}">
   <button 
-    title="Rename (alt+{km.keyRenameDoc})" 
+    title="Rename (Alt+{km.keyRenameDoc})" 
     class="badge m-0 p-2 relative inline-block truncate overflow-hidden text-ellipsis whitespace-nowrap text-left max-w-80" 
     on:click={renameCallback} style="
       background-color: {primColorLight}; 
@@ -84,7 +84,7 @@
 </div>
 {/if}
 <button 
-  title="Switch version (alt+{km.keySwitchDocVersion})" 
+  title="Switch version (Alt+{km.keySwitchDocVersion})" 
   class="badge bg-surface-50-900-token m-1 p-2 relative inline-block border-2 border-secondary-900/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"  
   use:popup={popupCBVersion}
 >

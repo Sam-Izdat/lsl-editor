@@ -665,14 +665,14 @@
     <svelte:fragment slot="trail">
       <AppRailAnchor 
         href="#" 
-        title="New Script (alt+{km.keyNewDoc})" 
+        title="New Script (Alt+{km.keyNewDoc})" 
         on:click={reqNewDoc}
         style="display:block;">
         <Icon src="{hero.Document}" size="16" style="margin: 4px auto;" solid/>
       </AppRailAnchor>
       <AppRailAnchor 
         href="#" 
-        title="Archive (alt+{km.keyArchive})" 
+        title="Archive (Alt+{km.keyArchive})" 
         on:click={reqOpenArchiveDrawer}
         style="display:block;">
         <Icon src="{hero.Folder}" size="16" style="margin: 4px auto;" solid/>
@@ -729,7 +729,7 @@
               <div id="ct3" class="divide-y divide-surface-400/10 !overflow-y-auto">
                 <div class="overflow-x-auto flex p-1">
                   <button 
-                    title="Save (alt+{km.keySaveDoc} / ctrl+{km.keySaveDoc})" 
+                    title="Save (Alt+{km.keySaveDoc} / Ctrl+{km.keySaveDoc})" 
                     class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}" 
                     on:click={reqSaveDoc}
                   >
@@ -737,7 +737,7 @@
                     <span class="hidden lg:inline ml-2">Save</span>
                   </button> 
                   <button 
-                    title="Save v{dsCurrentSession.versionCount} (alt+{km.keySaveDocNewVersion})"
+                    title="Save v{dsCurrentSession.versionCount} (Alt+{km.keySaveDocNewVersion})"
                     class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}"
                     on:click={reqSaveDocNewVersion}
                   >
