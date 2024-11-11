@@ -46,17 +46,16 @@ export class MobileHandler {
   async orientationChange() {
     canvasIsReady.set(false);
     if (this.landscape && this.winRef.screen.orientation.type.startsWith('portrait')) {
-      // panes.moveContentToStaging();
-      orientationLandscape.set(false);     
+      panes.moveContentToStaging();
+      orientationLandscape.set(false);
       await tick(); // Wait for DOM to be updated
       panes.returnContentToSplit();
       if      (this.view == 1) panes.moveContent('ct1', 'cr-full');
       else if (this.view == 2) panes.moveContent('ct2', 'cr-full');
       else if (this.view == 3) panes.moveContent('ct3', 'cr-full');
-      panes.showView(this.view);
       this.layoutChangeCallback();
     } else if (!this.landscape && this.winRef.screen.orientation.type.startsWith('landscape')) {
-      // panes.moveContentToStaging();
+      panes.moveContentToStaging();
       orientationLandscape.set(true);
       await tick();
       panes.returnContentToSplit();
@@ -65,7 +64,7 @@ export class MobileHandler {
       else if (this.view == 3) panes.moveContent('ct3', 'cr-full');
       panes.showView(this.view);
       this.layoutChangeCallback();
-    }    
+    } 
   };
 }
 

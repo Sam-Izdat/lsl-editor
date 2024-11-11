@@ -24,6 +24,7 @@ export const resetPaneSizes = (): PaneSizes => {
 export const moveContent = (idContent:string, idContainer:string) => {
   const source = document.querySelector('#' + idContent);
   const dest = document.querySelector('#' + idContainer);
+  console.log('~~DEST-' + '#' + idContainer)
   // const tempContainer = document.createDocumentFragment();
   // tempContainer.appendChild(source); 
   dest.appendChild(source);

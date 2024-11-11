@@ -152,24 +152,23 @@
     jumpToPos(lineno, colno);
   }
 
+  const handleError = (e: CustomEvent) => {
+    const { name, message, hash } = e.detail;
+    errors.set(hash, `${name}: ${message}`);
+  };
+
+  const handleStackLine = (e: CustomEvent) => {
+    const { source, lineno, colno, hash } = e.detail;
+    StackTrace.addTrace(hash, { source, lineno, colno });
+    if ($StackTrace.size == 1 && $StackTrace.values().next().value.length == 1) {
+      unMarkLines();
+      markLineCol(errors.get(hash) ?? 'error', lineno, colno);
+    }
+  };
+  
   // Register event listeners on mount and remove them on destroy
   onMount(async () => {
     if (browser) {
-
-      const handleError = (e: CustomEvent) => {
-        const { name, message, hash } = e.detail;
-        errors.set(hash, `${name}: ${message}`);
-      };
-
-      const handleStackLine = (e: CustomEvent) => {
-        const { source, lineno, colno, hash } = e.detail;
-        StackTrace.addTrace(hash, { source, lineno, colno });
-        if ($StackTrace.size == 1 && $StackTrace.values().next().value.length == 1) {
-          unMarkLines();
-          markLineCol(errors.get(hash) ?? 'error', lineno, colno);
-        }
-      };
-
       // Add event listeners
       window.addEventListener('build-start', handleBuildStart as EventListener);
       window.addEventListener('build-error', handleError as EventListener);
