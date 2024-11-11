@@ -8,10 +8,10 @@ import { cfg } from '../src/webui.config.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// GH is screwing this up, so try to install it manually if it ain't there
 const srcDir = path.join(__dirname, '..', 'node_modules', 'legitsl-web-core', 'dist', 'prod');
 const destDir = path.join(__dirname, '..', 'static', 'legitsl');
 
-// GH is screwing this up, so try to install it manually if it ain't there
 if (!fs.existsSync(srcDir)) {
   console.log(`"${srcDir}" not found. Installing dependency from package.json...`);
   try {
@@ -23,21 +23,30 @@ if (!fs.existsSync(srcDir)) {
   }
 } else {
   console.log(`"${srcDir}" found. Proceeding with postinstall tasks.`);
+  execSync(`ls -l ${srcDir}`, { stdio: 'inherit' });
 }
 
 async function copyAssets() {
   try {
+    if (!fs.existsSync(destDir)) {
+      await fs.mkdir(destDir, { recursive: true });
+    }
+
     const files = await fs.readdir(srcDir);
+    console.log('Files in srcDir:', files);
+
     const assetFiles = files.filter(file => file.endsWith('.js') || file.endsWith('.wasm'));
+    console.log('Filtered asset files:', assetFiles);
 
     await Promise.all(assetFiles.map(async (file) => {
+      console.log(`Copying ${file}...`);
       await fs.copyFile(path.join(srcDir, file), path.join(destDir, file));
     }));
 
     console.log(`Assets copied successfully from: \n    ${srcDir} \nto:\n    ${destDir}`);
   } catch (err) {
-    // console.error('Error copying assets:', err);
-    console.log('Local core assets not found or inaccessible.');
+    console.log('Local core assets not found or inaccessible.', err);
   }
 }
-copyAssets();
+
+await copyAssets();
