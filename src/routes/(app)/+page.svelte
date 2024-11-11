@@ -472,13 +472,31 @@
           autoBuildTimeoutID = setTimeout(reqBuild, cfg.AUTOBUILD_DELAY);
         }
       });
+
+      harbor.rxListen();
+
+      // Custom events
+      window.addEventListener('canvas-ready', canvasReady);
+      window.addEventListener('build-success', buildSuccess);
+      window.addEventListener('build-error', buildError);
+
       // Set up handlers
       docHandler    = new DocHandler(dsCurrentSession, monacoEditor);
       navHandler    = new NavHandler({layoutChangeCallback: handleLayoutChange});
       screenHandler = new ScreenHandler(window);
       mobileHandler = new MobileHandler(window, {layoutChangeCallback: handleLayoutChange});
 
-      harbor.rxListen();
+      // Keybind
+      observeKeyboard();
+      window.addEventListener('key-switch-view', navHandler.switchViewEvent);
+      window.addEventListener('key-save-document', reqSaveDoc);
+      window.addEventListener('key-save-document-new-version', reqSaveDocNewVersion);
+      window.addEventListener('key-new-document', reqNewDoc);
+      window.addEventListener('key-rename-document', reqRenameDoc);
+      window.addEventListener('key-archive-shelf', reqOpenArchiveDrawer);
+      window.addEventListener('key-build-script', reqBuild);
+      window.addEventListener('key-play-pause', reqPlayPause);
+      window.addEventListener('key-reset-prog', reqResetProg);
 
       // Observe viewport resize
       resizeObserver = new ResizeObserver(entries => {
@@ -531,25 +549,7 @@
 
       monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
 
-
-      // Custom events
-      window.addEventListener('canvas-ready', canvasReady);
-      window.addEventListener('build-success', buildSuccess);
-      window.addEventListener('build-error', buildError);
-
-      // Keybind
-      observeKeyboard();
-      window.addEventListener('key-switch-view', navHandler.switchViewEvent);
-      window.addEventListener('key-save-document', reqSaveDoc);
-      window.addEventListener('key-save-document-new-version', reqSaveDocNewVersion);
-      window.addEventListener('key-new-document', reqNewDoc);
-      window.addEventListener('key-rename-document', reqRenameDoc);
-      window.addEventListener('key-archive-shelf', reqOpenArchiveDrawer);
-      window.addEventListener('key-build-script', reqBuild);
-      window.addEventListener('key-play-pause', reqPlayPause);
-      window.addEventListener('key-reset-prog', reqResetProg);
       // window.addEventListener('key-stop-playback', reqClearStopAnimation);
-      
       
       await reqBuild();
       await reqStartAnimation();
@@ -723,7 +723,7 @@
                   id="canvasframe" 
                   width="800" 
                   height="800" 
-                  src="./canvasframe" 
+                  src="./canvasframe?v={__APP_VERSION__}" 
                   scrolling="no" 
                   sandbox="allow-scripts allow-popups"  
                   title="canvasframe"> 

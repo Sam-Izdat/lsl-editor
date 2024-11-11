@@ -46,7 +46,7 @@ export class MobileHandler {
   async orientationChange() {
     canvasIsReady.set(false);
     if (this.landscape && this.winRef.screen.orientation.type.startsWith('portrait')) {
-      panes.moveContentToStaging();
+      // panes.moveContentToStaging();
       orientationLandscape.set(false);     
       await tick(); // Wait for DOM to be updated
       panes.returnContentToSplit();
@@ -56,7 +56,7 @@ export class MobileHandler {
       panes.showView(this.view);
       this.layoutChangeCallback();
     } else if (!this.landscape && this.winRef.screen.orientation.type.startsWith('landscape')) {
-      panes.moveContentToStaging();
+      // panes.moveContentToStaging();
       orientationLandscape.set(true);
       await tick();
       panes.returnContentToSplit();
