@@ -461,6 +461,8 @@
     if (browser) {
       document.querySelector('body').setAttribute('data-theme', cfg.APP_THEME);
 
+      panes.returnContentToSplit();
+
       await waitForEditorInstance(); 
       $editorIsReady = true;
       
@@ -550,16 +552,12 @@
       monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
 
       // window.addEventListener('key-stop-playback', reqClearStopAnimation);
-      
-      panes.returnContentToSplit();
+
       await reqBuild();
       await reqStartAnimation();
 
-      if (Device.isMobile){
-        if (cfg.MOBILE_READONLY) docHandler.disableEditing();
-        mobileHandler.orientationChange();
-      }
-
+      if (Device.isMobile && cfg.MOBILE_READONLY) docHandler.disableEditing();
+      mobileHandler.orientationChange();
     }
   });
 
