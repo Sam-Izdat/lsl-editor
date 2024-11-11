@@ -163,7 +163,6 @@
   // UI actions   
   const reqOpenArchiveDrawer = async () => {
     if (!$drawerStore.open){
-      await reqStopAnimation();
       await docHandler.refreshDocList();
       drawerContentStore.set({
         id: 'archive',
@@ -290,11 +289,13 @@
     } else {
       docHandler.newDoc();
     }
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
   };
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
     if (dsCurrentSession.unsavedChanges){
       modalStore.trigger({
         ...modals.modalConfirm, 
@@ -325,7 +326,8 @@
       docHandler.forkDoc();
     }
     reqRenameDoc();
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
   };
 
   const reqImportFile = async (content: string, baseFilename?: string) => {
@@ -341,7 +343,8 @@
     }
     modalStore.close();
     reqRenameDoc(baseFilename ?? '');
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
   };
 
   const reqExportFile = () => {
@@ -408,7 +411,8 @@
     } else {
       docHandler.loadVersion(parseInt(v));
     }
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
   };
 
   const reqRevertDoc = async () => {
@@ -422,7 +426,8 @@
     } else {
       Log.toastInfo('no changes to revert')
     }
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
   }
 
   const reqRenameDoc = async (name?: string) => {
@@ -434,7 +439,8 @@
       txtConfirm: 'Rename',
       onConfirm: (inputVal) => { docHandler.renameDoc(inputVal); }
     })
-    await reqClearStopAnimation();
+    Log.clearScriptLog();
+    StackTrace.clear();
   };
 
   const reqSaveMenu = async () => {
