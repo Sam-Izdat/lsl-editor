@@ -22,7 +22,6 @@
 
 
   onMount(async () => {
-    console.log('~~ONMOUNT');
     
     const wasmScript = document.querySelector('script[src="./legitsl/LegitScriptWasm.js"]');
     if (!wasmScript) {
@@ -31,8 +30,6 @@
     } else {
       await waitForWasm(); 
     }
-
-    console.log('~~RESOLVED');
 
     window.__running = false;       // whether animation is running
     window.__script = '';           // script contents
@@ -168,9 +165,7 @@
           }
           break;
         case 'harbor-ready-ack':
-          console.log('***REC READY ACK');
           clearInterval(boardcastReady);
-          console.log('***READY INTERVAL CLEARED');
           break;
         case 'harbor-status':          
           window.parent.postMessage({ tx: 'sandbox-status-report', 

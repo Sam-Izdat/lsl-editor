@@ -142,7 +142,7 @@
   // Global status changing stuff
   const canvasReady = () => {
     if ($canvasIsReady) return;
-    console.warn('~~RX CANVAS READY');
+    Log.debug('Canvas ready');
     $canvasIsReady = true;
     let canvasframe = document.querySelector("#canvasframe");
     let canvasframeWindow = canvasframe.contentWindow;
@@ -186,13 +186,12 @@
   let autoBuildTimeoutID: number;
 
   const reqBuild = async () => {
-    console.warn('~~BUILD CALLED');
+    Log.debug('Build requested');
     Log.clearScriptLog();
     StackTrace.clear();
     let editorVal = monacoEditor.getValue();
 
     await waitForCanvas();
-    console.warn('~~BUILD CALLED - CANVAS AWAITED');
     let canvasframe = document.querySelector("#canvasframe");
     let canvasframeWindow = canvasframe.contentWindow;
 
@@ -243,9 +242,8 @@
   };
 
   const handleLayoutChange = async () => {
-    console.warn('~~HANDLE LAYOUT CALLED');
+    Log.debug('Layout change');
     await waitForCanvas();
-    console.warn('~~HANDLE LAYOUT CALLED - CANVAS AWAITED');
     await reqBuild();
     // iframe gets reloaded and script cache lost --
     // presumably there's some security logic here.
