@@ -30,10 +30,10 @@ export const cfg = {
   PWA_FILE_MIME_TYPE: 'application/x-legitsl',
   PWA_FILE_ACTION:    APP_HOST_PATH + 'open-file',
   PWA_URL_PATTERN:    'legitsl://*',
-  PWA_THEME_COLOR:    '#3B4762', // theme color for app status/title bars etc
-  PWA_BG_COLOR:       '#3B4762', // splash screen background
+  PWA_THEME_COLOR:    '#26211D', // theme color for app status/title bars etc
+  PWA_BG_COLOR:       '#1E1E1E', // splash screen background
   PWA_ORIENTATION:    'any',     // setting 'landscape' will force PWA into landscape mode at all times
-
+  
   // MISC OPTIONS
   //------------------
 
