@@ -15,6 +15,7 @@ export class NavHandler {
     this.layoutChangeCallback = layoutChangeCallback;
     this.view = get(currentView);
     this.session = get(ds.documentSession);
+    this.paneSizes = get(paneSizes);
     this.isInitialSubscription = true;
     this.unsubscribeAll = [
       currentView.subscribe(view => {
@@ -28,6 +29,15 @@ export class NavHandler {
       ds.documentSession.subscribe(session => {
         this.session = session;
       }),
+      paneSizes.subscribe(ps => {
+        this.paneSizes = ps;
+        if (this.view === 0) {
+          ds.documentSession.update(session => {
+            session.paneSizes = {...panes.resetPaneSizes(), ...ps ?? {}};
+            return session;
+          });
+        }
+      }),
     ];
   }
   
@@ -38,7 +48,7 @@ export class NavHandler {
   }
 
   // FIXME - redundant code below
-  
+
   switchView() {
     // this.session.paneSizes.set({...resetPaneSizes(), ...session.paneSizes ?? {}});
     switch (this.view) {

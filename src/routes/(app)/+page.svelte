@@ -751,54 +751,55 @@
   </div>
   <div id="cr-full" class="cr-dynamic hidden" />
   <div id="cr-staging" class="hidden">
-          <div id="ct1">
-            <MonacoEditor editorInstance={monacoEditor} on:init={setEditorInstance} />
-          </div>
 
+    <div id="ct1">
+      <MonacoEditor editorInstance={monacoEditor} on:init={setEditorInstance} />
+    </div>
 
-          <div id="ct2">
-            <iframe 
-              id="canvasframe" 
-              width="800" 
-              height="800" 
-              src="./canvasframe?v={__APP_VERSION__}" 
-              scrolling="no" 
-              sandbox="allow-scripts allow-popups"  
-              title="canvasframe"> 
-          </div>
+    <div id="ct2">
+      <iframe 
+        id="canvasframe" 
+        width="800" 
+        height="800" 
+        src="./canvasframe?v={__APP_VERSION__}" 
+        scrolling="no" 
+        sandbox="allow-scripts allow-popups"  
+        title="canvasframe"> 
+    </div>
 
-          <div id="ct3" class="divide-y divide-surface-400/10 !overflow-y-auto">
-            <div class="overflow-x-auto flex p-1">
-              <button 
-                title="Save (Alt+{km.keySaveDoc} / Ctrl+{km.keySaveDoc})" 
-                class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}" 
-                on:click={reqSaveDoc}
-              >
-                <Icon src="{hero.ArrowDownOnSquare}" size="16" class="mx-0 my-1" solid/>
-                <span class="hidden lg:inline ml-2">Save</span>
-              </button> 
-              <button 
-                title="Save v{dsCurrentSession.versionCount} (Alt+{km.keySaveDocNewVersion})"
-                class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}"
-                on:click={reqSaveDocNewVersion}
-              >
-                <Icon src="{hero.ArrowDownOnSquareStack}" size="16" class="mx-0 my-1" solid/>
-                <span class="hidden lg:inline ml-2">Save v{dsCurrentSession.versionCount}</span>
-              </button>
-              <div class="ml-auto flex">
-                <DocTitleBadge renameCallback={reqRenameDoc} switchVersionCallback={reqSwitchDocVersion} />
-                <DocMenuBadge 
-                  revertCallback={reqRevertDoc} 
-                  resetPanesCallback={reqResetPanes} 
-                  forkCallback={reqForkDoc} 
-                  exportCallback={reqExportFile}
-                />
-              </div>
-            </div>
-            <div>        
-              <DebugTable monacoEditor={monacoEditor} />
-            </div>
-          </div>
+    <div id="ct3" class="divide-y divide-surface-400/10 !overflow-y-auto">
+      <div class="overflow-x-auto flex p-1">
+        <button 
+          title="Save (Alt+{km.keySaveDoc} / Ctrl+{km.keySaveDoc})" 
+          class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}" 
+          on:click={reqSaveDoc}
+        >
+          <Icon src="{hero.ArrowDownOnSquare}" size="16" class="mx-0 my-1" solid/>
+          <span class="hidden lg:inline ml-2">Save</span>
+        </button> 
+        <button 
+          title="Save v{dsCurrentSession.versionCount} (Alt+{km.keySaveDocNewVersion})"
+          class="badge m-1 {dsCurrentSession.unsavedChanges ? 'variant-ghost-primary' : 'variant-soft-primary'}"
+          on:click={reqSaveDocNewVersion}
+        >
+          <Icon src="{hero.ArrowDownOnSquareStack}" size="16" class="mx-0 my-1" solid/>
+          <span class="hidden lg:inline ml-2">Save v{dsCurrentSession.versionCount}</span>
+        </button>
+        <div class="ml-auto flex">
+          <DocTitleBadge renameCallback={reqRenameDoc} switchVersionCallback={reqSwitchDocVersion} />
+          <DocMenuBadge 
+            revertCallback={reqRevertDoc} 
+            resetPanesCallback={reqResetPanes} 
+            forkCallback={reqForkDoc} 
+            exportCallback={reqExportFile}
+          />
+        </div>
+      </div>
+      <div>        
+        <DebugTable monacoEditor={monacoEditor} />
+      </div>
+    </div>
+    
   </div>
 </div>
 <style>

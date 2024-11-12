@@ -128,16 +128,14 @@ export const saveSession = async () => {
       ...get(documentSession), 
       contentBuffer: '', 
       unsavedChanges: false, 
-      adapter: 'idb',
-      paneSizes: get(paneSizes)
+      adapter: 'idb'
     }); 
   } else {
     await storageAdapterLS.save({ 
       ...get(documentSession), 
       contentBuffer: '', 
       unsavedChanges: false, 
-      adapter: 'ls',
-      paneSizes: get(paneSizes)
+      adapter: 'ls'
     })
   }
   
