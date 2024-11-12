@@ -1,9 +1,11 @@
 // SPA Navigation
 import { get } from 'svelte/store';
-import { currentView } from '$lib/stores/app_state';
+import { currentView, paneSizes } from '$lib/stores/app_state';
 import * as panes from '$lib/panes';
+import * as ds from '$lib/stores/doc_session'; 
 import { Log } from '$lib';
 import { canvasIsReady } from '$lib/stores';
+import type { PaneSizes } from '$lib/panes';
 
 export class NavHandler {
   constructor(options = {}) {
@@ -12,6 +14,7 @@ export class NavHandler {
     } = options;
     this.layoutChangeCallback = layoutChangeCallback;
     this.view = get(currentView);
+    this.session = get(ds.documentSession);
     this.isInitialSubscription = true;
     this.unsubscribeAll = [
       currentView.subscribe(view => {
@@ -22,6 +25,9 @@ export class NavHandler {
           this.switchView();
         }
       }),
+      ds.documentSession.subscribe(session => {
+        this.session = session;
+      }),
     ];
   }
   
@@ -31,34 +37,42 @@ export class NavHandler {
     currentView.set(event.detail.view);
   }
 
+  // FIXME - redundant code below
+  
   switchView() {
+    // this.session.paneSizes.set({...resetPaneSizes(), ...session.paneSizes ?? {}});
     switch (this.view) {
       case 0:
-        canvasIsReady.set(false);
-        panes.returnContentToSplit(); 
-        panes.showView(this.view);
-        this.layoutChangeCallback();
+        // paneSizes.set(session.paneSizes);
+        paneSizes.set({...panes.resetPaneSizes(), ...this.session.paneSizes ?? {}});
+        // canvasIsReady.set(false);
+        // panes.returnContentToSplit(); 
+        // panes.showView(this.view);
+        // this.layoutChangeCallback();
         break;
       case 1:
-        canvasIsReady.set(false);
-        panes.returnContentToSplit(); 
-        panes.moveContent('ct1', 'cr-full'); 
-        panes.showView(this.view);
-        this.layoutChangeCallback();
+        paneSizes.set({...panes.viewCodePaneSizes()});
+        // canvasIsReady.set(false);
+        // panes.returnContentToSplit(); 
+        // panes.moveContent('ct1', 'cr-full'); 
+        // panes.showView(this.view);
+        // this.layoutChangeCallback();
         break;
       case 2:
-        canvasIsReady.set(false);
-        panes.returnContentToSplit(); 
-        panes.moveContent('ct2', 'cr-full'); 
-        panes.showView(this.view);
-        this.layoutChangeCallback();
+        paneSizes.set({...panes.viewCanvasPaneSizes()});
+        // canvasIsReady.set(false);
+        // panes.returnContentToSplit(); 
+        // panes.moveContent('ct2', 'cr-full'); 
+        // panes.showView(this.view);
+        // this.layoutChangeCallback();
         break;
       case 3:
-        canvasIsReady.set(false);
-        panes.returnContentToSplit(); 
-        panes.moveContent('ct3', 'cr-full'); 
-        panes.showView(this.view);
-        this.layoutChangeCallback();
+        paneSizes.set({...panes.viewControlsPaneSizes()});
+        // canvasIsReady.set(false);
+        // panes.returnContentToSplit(); 
+        // panes.moveContent('ct3', 'cr-full'); 
+        // panes.showView(this.view);
+        // this.layoutChangeCallback();
         break;
       default:
         Log.error('somehow tried to switch to nonexistent view...')

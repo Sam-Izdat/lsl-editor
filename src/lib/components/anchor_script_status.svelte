@@ -91,7 +91,6 @@
   title="Reset Program (Alt+{km.keyResetProg})" 
   on:click={resetCallback} 
   class="display-block">
-  <!-- <Icon src="{hero.ArrowPathRoundedSquare}" size="16" style="margin: 4px auto;" solid/> -->
   <CustomIcon src={ico.Backward} size='16' class="inline-block" />
 </AppRailAnchor>
 <hr classs="hr m-1"/>
@@ -106,7 +105,7 @@
   style="display:block;"
   on:click={buildCallback}
 >
-  <Icon src="{hero.ArrowTurnDownLeft}" size="16" style="margin: 4px auto;" solid />
+  <CustomIcon src={ico.Lightning} size='16' class="inline-block" />
   <div 
     class="card place-content-stretch text-left font-normal p-1 max-w-72 bg-gradient-to-br variant-gradient-error-warning shadow shadow-error-900" 
     data-popup="error-popup"

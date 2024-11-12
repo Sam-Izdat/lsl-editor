@@ -6,7 +6,7 @@ import { browser } from "$app/environment";
 
 import { resetPaneSizes } from '$lib/panes';
 import type { PaneSizes } from '$lib/panes';
-import {paneSizes} from '$lib/stores';
+import { paneSizes } from '$lib/stores';
 
 // IndexedDB
 import * as storageAdapterIDB from '$lib/storage/indexedDB';

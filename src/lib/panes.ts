@@ -21,10 +21,45 @@ export const resetPaneSizes = (): PaneSizes => {
   }
 };
 
+export const viewCodePaneSizes = (): PaneSizes => {
+  return {
+    sizeLandscapePaneLeft:          100,
+    sizeLandscapePaneRight:         0,
+    sizeLandscapePaneTopRight:      0,
+    sizeLandscapePaneBottomRight:   0,
+    sizePortraitPaneTop:            100,
+    sizePortraitPaneMid:            0,
+    sizePortraitPaneBot:            0,
+  }
+};
+
+export const viewCanvasPaneSizes = (): PaneSizes => {
+  return {
+    sizeLandscapePaneLeft:          0,
+    sizeLandscapePaneRight:         100,
+    sizeLandscapePaneTopRight:      100,
+    sizeLandscapePaneBottomRight:   0,
+    sizePortraitPaneTop:            0,
+    sizePortraitPaneMid:            100,
+    sizePortraitPaneBot:            0,
+  }
+};
+
+export const viewControlsPaneSizes = (): PaneSizes => {
+  return {
+    sizeLandscapePaneLeft:          0,
+    sizeLandscapePaneRight:         100,
+    sizeLandscapePaneTopRight:      0,
+    sizeLandscapePaneBottomRight:   100,
+    sizePortraitPaneTop:            0,
+    sizePortraitPaneMid:            0,
+    sizePortraitPaneBot:            100,
+  }
+};
+
 export const moveContent = (idContent:string, idContainer:string) => {
   const source = document.querySelector('#' + idContent);
   const dest = document.querySelector('#' + idContainer);
-  console.log('~~DEST-' + '#' + idContainer)
   // const tempContainer = document.createDocumentFragment();
   // tempContainer.appendChild(source); 
   dest.appendChild(source);

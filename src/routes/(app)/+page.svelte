@@ -16,8 +16,8 @@
   import * as km from '$lib/keymap';
 
   import * as harbor from '$lib/harbor';
-  import { StackTrace } from '$lib/stores';
-  import { StackTraceTable } from '$lib/components';
+  import { debugStore } from '$lib/stores';
+  import { DebugTable } from '$lib/components';
 
   // Global state
   import { 
@@ -186,7 +186,7 @@
   const reqBuild = async () => {
     Log.debug('Build requested');
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
     let editorVal = monacoEditor.getValue();
 
     await waitForCanvas();
@@ -232,7 +232,7 @@
 
   const reqResetProg = async () => {
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
     await waitForCanvas();
     let canvasframe = document.querySelector("#canvasframe");
     let canvasframeWindow = canvasframe.contentWindow;
@@ -255,7 +255,7 @@
 
   const reqClearStopAnimation = async () => {
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
     await reqStopAnimation();
   };
   
@@ -296,7 +296,7 @@
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
     if (dsCurrentSession.unsavedChanges){
       modalStore.trigger({
         ...modals.modalConfirm, 
@@ -415,7 +415,7 @@
       docHandler.loadVersion(parseInt(v));
     }
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
   };
 
   const reqRevertDoc = async () => {
@@ -430,7 +430,7 @@
       Log.toastInfo('no changes to revert')
     }
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
   }
 
   const reqRenameDoc = async (name?: string) => {
@@ -443,7 +443,7 @@
       onConfirm: (inputVal) => { docHandler.renameDoc(inputVal); }
     })
     Log.clearScriptLog();
-    StackTrace.clear();
+    debugStore.clear();
   };
 
   const reqSaveMenu = async () => {
@@ -654,15 +654,15 @@
       stopCallback={reqStopAnimation} 
       resetCallback={reqResetProg}
     />
+    <hr classs="hr m-1"/>
     <AppRailAnchor 
       href="#" 
       title="Toggle Auto-Build" 
       on:click={() => { isAutoBuild.set(!$isAutoBuild); }} 
       class={$isAutoBuild ? 'bg-tertiary-500' : ''} 
       style="display:block;">
-      <Icon src="{hero.PlayCircle}" size="16" style="margin: 4px auto;" solid/>
+      <CustomIcon src={ico.ClockCycle} size='16' class="inline-block" />
     </AppRailAnchor>
-    <hr classs="hr m-1"/>
     <AppRailAnchor 
       href="#" 
       title="Toggle Read-Only" 
@@ -796,7 +796,7 @@
               </div>
             </div>
             <div>        
-              <StackTraceTable monacoEditor={monacoEditor} />
+              <DebugTable monacoEditor={monacoEditor} />
             </div>
           </div>
   </div>
