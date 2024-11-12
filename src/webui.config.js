@@ -11,7 +11,7 @@ export const cfg = {
   // GENERAL
   //------------------
   APP_TITLE:          'LegitSL Editor',
-  APP_SHORT_NAME:     'LSLE',
+  APP_SHORT_NAME:     'LSL Editor',
   APP_DESCRIPTION:    'Web-based editor for LegitSL',  
   APP_THEME:          'vintage', // skeleton UI theme
 
