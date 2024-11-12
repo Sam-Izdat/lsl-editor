@@ -39,5 +39,21 @@
       "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+     "src": "./screenshots/sh_landscape.png",
+      "sizes": "990x533",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "LegitSL Editor - Landscape"
+    },
+    {
+     "src": "./screenshots/sh_portrait.png",
+      "sizes": "554x798",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "LegitSL Editor - Portrait"
+    }
+  ],
 }
