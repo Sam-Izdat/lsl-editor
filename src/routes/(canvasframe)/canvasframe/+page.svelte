@@ -24,7 +24,7 @@
   onMount(async () => {
     const wasmScript = document.querySelector('script[src="./legitsl/LegitScriptWasm.js"]');
     if (!wasmScript) {
-      reject(new Error('Script not found.'));
+      new Error('Script not found.');
       return;
     } else {
       await waitForWasm(); 
