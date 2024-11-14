@@ -1,6 +1,6 @@
 # lsl editor
 
-An client-side web-based editor for [LegitSL/LegitScript](https://github.com/Raikiri/LegitScript). Uses a [stripped-down fork](https://github.com/sam-Izdat/legitsl-web-core) of [LegitScriptEditor](https://github.com/radiance-cascades/LegitScriptEditor/) in a sandboxed iframe. The editor was built with [Sveltekit](https://svelte.dev/), [Skeleton UI toolkit](https://www.skeleton.dev/) and [Monaco Editor](https://microsoft.github.io/monaco-editor/).
+A client-side web-based editor for [LegitSL/LegitScript](https://github.com/Raikiri/LegitScript). Uses a [stripped-down fork](https://github.com/sam-Izdat/legitsl-web-core) of [LegitScriptEditor](https://github.com/radiance-cascades/LegitScriptEditor/) in a sandboxed iframe. The editor was built with [Sveltekit](https://svelte.dev/), [Skeleton UI toolkit](https://www.skeleton.dev/) and [Monaco Editor](https://microsoft.github.io/monaco-editor/).
 
 ## [You can find it here.](https://sam-izdat.github.io/lsl-editor)
 
