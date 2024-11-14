@@ -25,8 +25,8 @@ export const viewCodePaneSizes = (): PaneSizes => {
   return {
     sizeLandscapePaneLeft:          100,
     sizeLandscapePaneRight:         0,
-    sizeLandscapePaneTopRight:      0,
-    sizeLandscapePaneBottomRight:   0,
+    sizeLandscapePaneTopRight:      50,
+    sizeLandscapePaneBottomRight:   50,
     sizePortraitPaneTop:            100,
     sizePortraitPaneMid:            0,
     sizePortraitPaneBot:            0,

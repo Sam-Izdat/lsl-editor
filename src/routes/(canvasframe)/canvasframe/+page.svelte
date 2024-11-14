@@ -2,7 +2,7 @@
   import { onDestroy, onMount, tick } from 'svelte';
   import { cfg } from '$root/webui.config.js';
 
-  let boardcastReady: ReturnType<typeof setInterval>;
+  let broadcastReady: ReturnType<typeof setInterval>;
 
   const waitForWasm = async () => {
     return new Promise((resolve, reject) => {
@@ -33,14 +33,14 @@
     window.__running = false;       // whether animation is running
     window.__script = '';           // script contents
     window.__scriptLen = 0;         // length of script (for scope)
-    window.__stackTrace = [];       // persists from build-start to build-start
+    window.__errorLog = [];         // persists from build-start to build-start
     window.VIEWPORT_WIDTH = 800;    // width of parent UI viewport (max canvas width)
     window.VIEWPORT_HEIGHT = 600;   // height of parent UI viewport (max canvas height)
 
 
     console.error = (...e) => console.log(...e); 
 
-    // extract pertinent info from stack trace (chromium & FF)
+    // TODO: remove this, as it is only pertinent to taichi.js
     window.__parseLine = (line) => {
       const match = line.match(/(?:<anonymous>|eval):(\d+):(\d+)/);
       if (match) {
@@ -58,7 +58,7 @@
       stackLines.forEach(line => {
         let step = window.__parseLine(line);
         if (step) {
-          window.__stackTrace.push(step);
+          window.__errorLog.push(step);
           txStackLine(step[0], parseInt(step[1]), parseInt(step[2]), err_hash);
         }
       });
@@ -87,7 +87,7 @@
           
           stackLines.forEach(line => {
             let step = window.__parseLine(line);
-            if (step) window.__stackTrace.push(step);
+            if (step) window.__errorLog.push(step);
             txStackLine(step[0], step[1], step[2]);
           });
         }
@@ -131,7 +131,7 @@
       switch (tx) {
         case 'harbor-build':
           window.__script = e.data.script;
-          window.__stackTrace = [];
+          window.__errorLog = [];
           window.__running = true;
           window.parent.postMessage({ tx: 'sandbox-build-start' }, e.origin);
           await window.digest(window.__script); // fire-and-forget w/o await, msg below confirms init, not success
@@ -145,10 +145,6 @@
           window.__running = true;
           window.lslcore.executeLoop();
           if (e.data.width && e.data.height){
-            // We intentionally don't resize the canvas, and leave that up to the user script:
-            // let elCanvas = document.querySelector('#result_canvas');     
-            // elCanvas.width = parseInt(e.data.width);
-            // elCanvas.height = parseInt(e.data.height);
             window.VIEWPORT_WIDTH = parseInt(e.data.width);
             window.VIEWPORT_HEIGHT = parseInt(e.data.height);
           }
@@ -164,13 +160,13 @@
           }
           break;
         case 'harbor-ready-ack':
-          clearInterval(boardcastReady);
+          clearInterval(broadcastReady);
           break;
         case 'harbor-status':
           window.parent.postMessage({ tx: 'sandbox-status-report', 
             status: {
               running: window.__running,
-              stackTrace: window.__stackTrace
+              stackTrace: window.__errorLog
             }
           }, e.origin);
           break;
@@ -181,10 +177,6 @@
           window.lslcore.contextValues.clear();
           break;
         case 'harbor-resize':
-          // We intentionally don't resize the canvas, and leave that up to the user script:
-          // let elCanvas = document.querySelector('#result_canvas');
-          // elCanvas.width = parseInt(e.data.width);
-          // elCanvas.height = parseInt(e.data.height);
           window.VIEWPORT_WIDTH = parseInt(e.data.height);
           window.VIEWPORT_HEIGHT = parseInt(e.data.width);
           window.parent.postMessage({ tx: 'sandbox-resize-confirm'}, e.origin);
@@ -196,7 +188,7 @@
 
     // transmit
     const txReady = () => {
-      boardcastReady = setInterval(() => {
+      broadcastReady = setInterval(() => {
         window.parent.postMessage({ tx: 'sandbox-ready'}, "*");
       }, 1000 / cfg.TX_READY_FREQ);
     };
@@ -226,7 +218,7 @@
 
     window.digest = async (script) => {
       window.__scriptLen = script.split(/\r\n|\r|\n/).length; // lines
-      window.__stackTrace = [];
+      window.__errorLog = [];
       try { 
         await window.lslcore.update(script);
         txBuildSuccess();
@@ -248,8 +240,6 @@
     txReady();
 
     setInterval(txContext, 1000 / cfg.TX_CONTEXT_FREQ);
-
-    // setTimeout(txReady, 250);
   });
 </script>
 <style>
