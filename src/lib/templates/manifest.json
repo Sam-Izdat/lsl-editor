@@ -23,14 +23,14 @@
   "screenshots": [
     {
       "src": "./screenshots/sh_landscape.png",
-      "sizes": "990x533",
+      "sizes": "1166x608",
       "type": "image/png",
       "form_factor": "wide",
       "label": "LegitSL Editor - Landscape"
     },
     {
      "src": "./screenshots/sh_portrait.png",
-      "sizes": "554x798",
+      "sizes": "327x708",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "LegitSL Editor - Portrait"
