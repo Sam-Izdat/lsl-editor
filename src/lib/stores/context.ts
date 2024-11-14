@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store';
 import { get } from 'svelte/store';
 
+import { txContextValue, txContextReset } from '$lib/harbor';
+
 let contextDefsFloat: Set<string> = new Set();
 let contextDefsInt:   Set<string> = new Set();
 let contextDefsBool:  Set<string> = new Set();
@@ -8,13 +10,25 @@ let contextDefsText:  Set<string> = new Set();
 
 let activeContextVarNames:   Set<string> = new Set();
 
+export const sendContextValueUpdate = (name, value) => {
+  let canvasframe = document.querySelector("#canvasframe");
+  let canvasframeWindow = canvasframe.contentWindow;
+  txContextValue(canvasframeWindow, name, value);
+};
+
+export const sendContextReset = () => {  
+  let canvasframe = document.querySelector("#canvasframe");
+  let canvasframeWindow = canvasframe.contentWindow;
+  txContextReset(canvasframeWindow);
+}
+
 interface FloatRequest {
   name:     string;
   def_val:  number;
   min_val:  number;
   max_val:  number;
   sort_idx: number;
-}
+};
 
 interface IntRequest {
   name:     string;
@@ -22,22 +36,34 @@ interface IntRequest {
   min_val:  number;
   max_val:  number;
   sort_idx: number;
-}
+};
 
 interface BoolRequest {
   name:     string;
   sort_idx: number;
-}
+};
 
 interface TextRequet {
   name:     string;
   text:     string;
   sort_idx: number;
-}
+};
 
 export const contextVars    = writable<any[]>([]);
 export const contextValues  = writable<any>({});
 let contextVarsLen:number   = 0;
+
+export const resetContext = () => {
+  contextVarsLen = 0;
+  contextDefsFloat.clear();
+  contextDefsInt.clear();
+  contextDefsBool.clear();
+  contextDefsText.clear();
+  activeContextVarNames.clear();
+  contextValues.set({});
+  contextVars.set([]);
+  sendContextReset();
+};
 
 // All the silliness here is done in hope of limiting DOM fuckery and preventing reflow
 export const handleContextUpdate = (e: CustomEvent) => {

@@ -125,6 +125,9 @@ export const txResize = (sandbox: Window, width:number, height:number ) => {
 };
 
 export const txContextValue = (sandbox: Window, name: string, value: any ) => {
-  console.log(name, value);
   sandbox.postMessage({ tx: 'harbor-context-value', name: name, value: value }, "*");
+};
+
+export const txContextReset = (sandbox: Window ) => {
+  sandbox.postMessage({ tx: 'harbor-context-reset' }, "*");
 };

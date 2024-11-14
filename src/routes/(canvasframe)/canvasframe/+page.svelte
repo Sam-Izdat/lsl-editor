@@ -177,6 +177,9 @@
         case 'harbor-context-value':
           window.lslcore.contextValues.set(e.data.name, e.data.value);
           break;
+        case 'harbor-context-reset':
+          window.lslcore.contextValues.clear();
+          break;
         case 'harbor-resize':
           // We intentionally don't resize the canvas, and leave that up to the user script:
           // let elCanvas = document.querySelector('#result_canvas');

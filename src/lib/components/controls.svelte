@@ -5,20 +5,13 @@
   import { 
     contextValues,
     contextVars,
-    handleContextUpdate 
+    handleContextUpdate,
+    sendContextValueUpdate,
   } from '$lib/stores';
 
   // import { RangeSlider } from '@skeletonlabs/skeleton';
   import { CustomRangeSlider } from '$lib/components';
   import { SlideToggle } from '@skeletonlabs/skeleton';
-
-  import { txContextValue } from '$lib/harbor';
-
-  const handleValueUpdate = (name, value) => {
-    let canvasframe = document.querySelector("#canvasframe");
-    let canvasframeWindow = canvasframe.contentWindow;
-    txContextValue(canvasframeWindow, name, value)
-  }
 
   onMount(async () => {
     if (browser) {
@@ -45,7 +38,7 @@
         max={item.max_val} 
         min={item.min_val} 
         step={0.001} 
-        on:input={() => {handleValueUpdate(item.name, $contextValues[item.name])}}
+        on:input={() => {sendContextValueUpdate(item.name, $contextValues[item.name])}}
         ticked
       >
         <div class="flex justify-between items-center">
@@ -62,7 +55,7 @@
         max={item.max_val} 
         min={item.min_val}  
         step={1} 
-        on:input={() => {handleValueUpdate(item.name, $contextValues[item.name])}}
+        on:input={() => {sendContextValueUpdate(item.name, $contextValues[item.name])}}
         ticked
       >
         <div class="flex justify-between items-center">
@@ -76,7 +69,7 @@
       <SlideToggle 
         name="ctrl-checkbox-{i}" 
         bind:checked={$contextValues[item.name]} 
-        on:change={() => {handleValueUpdate(item.name, $contextValues[item.name])}} 
+        on:change={() => {sendContextValueUpdate(item.name, $contextValues[item.name])}} 
         size="sm"
       >
         {item.name}

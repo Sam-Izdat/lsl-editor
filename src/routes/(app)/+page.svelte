@@ -16,7 +16,7 @@
   import * as km from '$lib/keymap';
 
   import * as harbor from '$lib/harbor';
-  import { debugStore } from '$lib/stores';
+  import { debugStore, resetContext } from '$lib/stores';
 
   // Global state
   import { 
@@ -230,10 +230,7 @@
   };
 
   const handleLayoutChange = async () => {
-    Log.debug('~~Layout change');
-    Log.debug('~~WAITING CANVAS');
     await waitForCanvas();
-    Log.debug('~~CANVASS AWAITED');
     await reqBuild();
     // iframe gets reloaded and script cache lost --
     // presumably there's some security logic here.
@@ -277,11 +274,13 @@
         txtConfirm: "New Script",
         onConfirm: () => {
           $currentView = 0;
+          resetContext();
           docHandler.newDoc();
         }
       });
     } else {      
       $currentView = 0;
+      resetContext();
       docHandler.newDoc();
     }
     await reqBuild();
@@ -298,12 +297,14 @@
         txtConfirm: "Load Script",
         onConfirm: async () => {
           $currentView = 0;
+          resetContext();
           await docHandler.loadDoc(uuid, adapter); 
           drawerStore.close(); 
         },
       });
     } else {
       $currentView = 0;
+      resetContext();
       docHandler.loadDoc(uuid, adapter); 
       drawerStore.close();
     }
@@ -322,11 +323,13 @@
         txtConfirm: "Fork Script",
         onConfirm: () => {
           $currentView = 0;
+          resetContext();
           docHandler.forkDoc();
         },
       });
     } else {      
-      $currentView = 0;
+      $currentView = 0;      
+      resetContext();
       docHandler.forkDoc();
     }
     reqRenameDoc();
@@ -341,11 +344,13 @@
         txtConfirm: "Import File",
         onConfirm: () => {
           $currentView = 0;
+          resetContext();
           docHandler.newDoc(content, baseFilename ?? ''); 
         },
       });
     } else {
-      $currentView = 0;
+      $currentView = 0;      
+      resetContext();
       docHandler.newDoc(content, baseFilename ?? '');
     }
     modalStore.close();
