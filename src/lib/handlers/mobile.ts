@@ -46,6 +46,7 @@ export class MobileHandler {
   async orientationChange() {
     canvasIsReady.set(false);
     if (this.landscape && this.winRef.screen.orientation.type.startsWith('portrait')) {
+      currentView.set(0);
       panes.moveContentToStaging();
       orientationLandscape.set(false);
       await tick(); // Wait for DOM to be updated
@@ -55,6 +56,7 @@ export class MobileHandler {
       else if (this.view == 3) panes.moveContent('ct3', 'cr-full');
       this.layoutChangeCallback();
     } else if (!this.landscape && this.winRef.screen.orientation.type.startsWith('landscape')) {
+      currentView.set(0);
       panes.moveContentToStaging();
       orientationLandscape.set(true);
       await tick();
