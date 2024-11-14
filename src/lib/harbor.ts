@@ -6,13 +6,12 @@ export const rxListen = () => {
   window.addEventListener('message', handleMessage);
 };
 
-// Function to remove the listener
 export const rxDispose = () => {
   window.removeEventListener('message', handleMessage);
 };
 
 // mostly a passthrough module at present -- 
-// sandbox events can undergo filtering of validation before being re-emitted
+// sandbox events can undergo filtering or validation before being re-emitted
 
 // receive (serialized w/ structuredClone)
 export const rxSandbox = (e: Event) => {
