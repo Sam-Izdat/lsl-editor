@@ -46,6 +46,12 @@ export const cfg = {
   // IndexedDB store name for archive screenshots/thumbnails
   IDB_THUMBNAIL_NAME: 'docthumbs',
 
+  // Context broadcast frequency - times per second
+  TX_CONTEXT_FREQ:    60,
+
+  // Ready broadcast frequency (cancelled by ack) -times per second
+  TX_READY_FREQ:      60,
+
   // LocalStorage prefix
   LS_PREFIX:          'lsl-script-',
 

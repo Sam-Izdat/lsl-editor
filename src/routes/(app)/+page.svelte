@@ -17,7 +17,6 @@
 
   import * as harbor from '$lib/harbor';
   import { debugStore } from '$lib/stores';
-  import { DebugTable } from '$lib/components';
 
   // Global state
   import { 
@@ -58,7 +57,14 @@
   let viewportEl;
 
   // Core components
-  import { MonacoEditor, AnchorLightSwitch, AnchorScriptStatus, DocTitleBadge, DocMenuBadge }  from '$lib/components';
+  import { 
+    MonacoEditor, 
+    AnchorLightSwitch, 
+    AnchorScriptStatus, 
+    DocTitleBadge, 
+    DocMenuBadge,
+    ControlsAccordion,
+  }  from '$lib/components';
   import * as panes from '$lib/panes';
 
   // Modals, Drawers
@@ -120,25 +126,6 @@
     return true;
   };
 
-  // const waitForIframeLoad = () => {
-  //   return new Promise((resolve, reject) => {
-  //     if (iframe.contentDocument || iframe.contentWindow) {
-  //       // If iframe is already loaded, resolve immediately
-  //       resolve();
-  //     } else {
-  //       // Otherwise, add a listener to wait until it loads
-  //       iframe.addEventListener('load', () => {
-  //         resolve();
-  //       });
-
-  //       // Optional: Handle errors if the iframe fails to load
-  //       iframe.addEventListener('error', (err) => {
-  //         reject(new Error('Error loading iframe: ' + err));
-  //       });
-  //     }
-  //   });
-  // };
-
   // Global status changing stuff
   const canvasReady = () => {
     let canvasframe = document.querySelector("#canvasframe");
@@ -179,7 +166,10 @@
     }
   };
 
-  const reqResetPanes = () => paneSizes.set({...panes.resetPaneSizes()});
+  const reqResetPanes = () => {
+    $currentView = 0;
+    paneSizes.set({...panes.resetPaneSizes()});
+  };
 
   let autoBuildTimeoutID: number;
 
@@ -718,13 +708,13 @@
   <div id="cr-panes" class="grid cr-dynamic">
     {#if $orientationLandscape}
     <Splitpanes theme="skeleton-theme" style="width: 100%; height: 100%;">
-      <Pane minSize={20} bind:size={$paneSizes.sizeLandscapePaneLeft}>
+      <Pane minSize={0} bind:size={$paneSizes.sizeLandscapePaneLeft}>
         <div id="cr-pane1">
         </div>
       </Pane>
-      <Pane minSize={20} bind:size={$paneSizes.sizeLandscapePaneRight}>
+      <Pane minSize={0} bind:size={$paneSizes.sizeLandscapePaneRight}>
         <Splitpanes horizontal={true}>
-          <Pane minSize={15} bind:size={$paneSizes.sizeLandscapePaneTopRight}>
+          <Pane minSize={0} bind:size={$paneSizes.sizeLandscapePaneTopRight}>
             <div id="cr-pane2">
             </div>
           </Pane>
@@ -737,10 +727,10 @@
     </Splitpanes>
     {:else}
     <Splitpanes theme="skeleton-theme" style="width: 100%; height: 100%;" horizontal={true}>
-      <Pane minSize={20} bind:size={$paneSizes.sizePortraitPaneTop}>
+      <Pane minSize={0} bind:size={$paneSizes.sizePortraitPaneTop}>
         <div id="cr-pane1" />
       </Pane>
-      <Pane minSize={5} bind:size={$paneSizes.sizePortraitPaneMid}>
+      <Pane minSize={0} bind:size={$paneSizes.sizePortraitPaneMid}>
         <div id="cr-pane2" />
       </Pane>
       <Pane minSize={0} bind:size={$paneSizes.sizePortraitPaneBot}>
@@ -795,11 +785,9 @@
           />
         </div>
       </div>
-      <div>        
-        <DebugTable monacoEditor={monacoEditor} />
-      </div>
+      <ControlsAccordion monacoEditor={monacoEditor} />
     </div>
-    
+
   </div>
 </div>
 <style>

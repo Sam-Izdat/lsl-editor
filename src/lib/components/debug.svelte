@@ -24,10 +24,10 @@
   let decorations: monaco.editor.IEditorDecorationsCollection;
 
   // Icons
-  import { Icon } from 'svelte-hero-icons';
-  import * as hero from 'svelte-hero-icons';
-  import { CustomIcon } from '$lib/components/icons';
-  import * as ico from '$lib/components/icons';
+  // import { Icon } from 'svelte-hero-icons';
+  // import * as hero from 'svelte-hero-icons';
+  // import { CustomIcon } from '$lib/components/icons';
+  // import * as ico from '$lib/components/icons';
 
   const findCodeString = (searchString) => {
     const model = monacoEditor.getModel();
@@ -81,58 +81,6 @@
     }
   };
 
-  const drawSVG = (id, lineno, colno, dotGraph, currentNode, prevNode, nextNode) => {
-    if (browser) {
-
-      // Maybe, maybe not:
-      // rankdir="LR";
-
-      if (nextNode) dotGraph = dotGraph.replace('"'+currentNode+'" -> "'+nextNode+'";', '');
-      if (prevNode) dotGraph = dotGraph.replace('"'+prevNode+'" -> "'+currentNode+'";', '');
-      // ${dotGraph}
-      const dot = `
-  digraph { 
-  size="6.5,6.5"
-  rankdir="LR"
-  
-  node [colorscheme=set39]
-  node [shape=rect, style="filled", fillcolor=4, fontname="Consolas"]
-  edge[arrowhead=tee, arrowsize=0.85, color="${$isDark ? 'white' : 'black'}", fontsize=10, fontcolor=navy]
-    "${currentNode}"
-  ${nextNode ? 'node [shape=rect, style="filled", fillcolor=2, fontname="Consolas"]\n  "'+currentNode+'" -> "'+nextNode+'"\n' : ''}
-  ${prevNode ? 'node [shape=rect, style="filled", fillcolor=6, fontname="Consolas"]\n  "'+prevNode+'" -> "'+currentNode+'"\n' : ''}
-  node [shape=rect, style="filled", fillcolor=1, fontname="Consolas"]; 
-    ${dotGraph}
-    bgcolor=transparent
-  }`;
-      instance().then(viz => {
-        const el = document.querySelector(`#callgraph_${id}_${lineno}_${colno}`);
-        el.replaceChildren();
-        el.appendChild(viz.renderSVGElement(dot));
-      });
-    }
-  };
-
-  const findAdjacentLines = (
-  id: string,
-  source: string,
-  lineno: number,
-  colno: number
-  ): { previous?: DebugLine; next?: DebugLine } => {
-    const lines = $debugStore.get(id);
-
-    if (!lines) return {};
-
-    const index = lines.findIndex(line => line.lineno === lineno && line.colno === colno);
-
-    if (index === -1) return {};
-
-    return {
-      next: index > 0 ? lines[index - 1].source : '',
-      previous: index < (lines.length - 1) ? lines[index + 1].source : '',
-    };
-  };
-
   const jumpToPos = (lineno, colno) => {
     monacoEditor.setPosition({ lineNumber: lineno, column: colno });
     monacoEditor.revealPositionInCenter({ lineNumber: lineno, column: colno });
@@ -166,16 +114,13 @@
     }
   };
   
-  // Register event listeners on mount and remove them on destroy
   onMount(async () => {
     if (browser) {
-      // Add event listeners
       window.addEventListener('build-start', handleBuildStart as EventListener);
       window.addEventListener('build-error', handleError as EventListener);
       window.addEventListener('build-err-stack-line', handleStackLine as EventListener);
     }
   });
-  // Remove event listeners on component destroy
   onDestroy(() => {
     if (browser) {
       window.removeEventListener('build-start', handleBuildStart as EventListener);
@@ -185,66 +130,51 @@
   });
 </script>
 
-<Accordion>
-  <AccordionItem open padding="py-1 px-px">
-    <svelte:fragment slot="lead">
-      <Icon src="{hero.CircleStack}" size="20" class="mx-0 my-1" solid/>
+
+<Accordion padding="py-1 px-1">
+
+  {#each $debugStore as [errorId, stackLines]}
+  <AccordionItem open class="variant-ghost-error ">
+    <svelte:fragment slot="summary">
+      <p class="font-semibold text-base alert m-1 px-3 py-0">
+        {errors.get(errorId) ?? ''}
+      </p>
     </svelte:fragment>
-    <svelte:fragment slot="summary"><p class="font-semibold text-base">Debug</p></svelte:fragment>
     <svelte:fragment slot="content">
-
-
-    <Accordion padding="py-1 px-0.5">
-
-      {#each $debugStore as [errorId, stackLines]}
-      <AccordionItem open class="variant-ghost-error ">
-        <svelte:fragment slot="lead">
-          <Icon src="{hero.ExclamationCircle}" size="20" class="ml-2 mr-0 my-0" solid/>
-        </svelte:fragment>
-        <svelte:fragment slot="summary">
-          <p class="font-semibold text-base alert m-1 p-1">
-            {errors.get(errorId) ?? ''}
-          </p>
-        </svelte:fragment>
-        <svelte:fragment slot="content">
-          <div class="table-container w-full shadow-xl p-0 m-0">
-            <table class="table table-hover m-0">
-              <thead>
-                <tr>
-                  <th class="w-full !p-1">Error</th>
-                  <th class="w-24 !p-1">Line</th>
-                  <th class="w-24 !p-1">Col</th>
-                </tr>
-              </thead>
-              <tbody class="font-mono">
-                {#each stackLines as { source, lineno, colno }}
-                  <tr>
-                    <td class="!pt-1 !pb-1">
-                      <button class="w-full text-left" on:click={
-                        () => { handleErrorSelect(errors.get(errorId), lineno, colno) }
-                      }>
-                        {source}
-                      </button>
-                    </td>
-                    <td class="!pt-1 !pb-1">{lineno}</td>
-                    <td class="!pt-1 !pb-1">{colno}</td>
-                  </tr>
-                  <tr>
-                    <td id="row_{errorId}_{lineno}_{colno}" colspan=3 class="!pt-1 !pb-1 hidden">
-                      <div id="callgraph_{errorId}_{lineno}_{colno}" class="h-fit w-full flex justify-center p-2 callgraph" />
-                    </td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
-          </div>
-        </svelte:fragment>
-      </AccordionItem>
-      {/each}
-    </Accordion>
-
+      <div class="table-container w-full p-0 m-0">
+        <table class="table table-hover m-0">
+          <thead>
+            <tr>
+              <th class="w-full !p-1">Error</th>
+              <th class="w-24 !p-1">Line</th>
+              <th class="w-24 !p-1">Col</th>
+            </tr>
+          </thead>
+          <tbody class="font-mono">
+            {#each stackLines as { source, lineno, colno }}
+              <tr>
+                <td class="!pt-1 !pb-1">
+                  <button class="w-full text-left" on:click={
+                    () => { handleErrorSelect(errors.get(errorId), lineno, colno) }
+                  }>
+                    {source}
+                  </button>
+                </td>
+                <td class="!pt-1 !pb-1">{lineno}</td>
+                <td class="!pt-1 !pb-1">{colno}</td>
+              </tr>
+              <tr>
+                <td id="row_{errorId}_{lineno}_{colno}" colspan=3 class="!pt-1 !pb-1 hidden">
+                  <div id="callgraph_{errorId}_{lineno}_{colno}" class="h-fit w-full flex justify-center p-2 callgraph" />
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
     </svelte:fragment>
   </AccordionItem>
+  {/each}
 </Accordion>
 <style>
 :global(.callgraph > svg)  {

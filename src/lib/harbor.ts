@@ -20,26 +20,18 @@ export const rxSandbox = (e: Event) => {
 
   const tx: string = e.data.tx;
   switch (tx) {
-    // RESP.
-    case 'sandbox-build-start':
-      Log.debug('Sandbox build started.')
-      window.dispatchEvent(new CustomEvent('build-started'));
-      break;
-    case 'sandbox-render-start':
-      Log.debug('Sanbox render started.');
-      window.dispatchEvent(new CustomEvent('render-started'));
-      break;
-    case 'sandbox-render-stop':
-      Log.debug('Sanbox render stopped.');
-      window.dispatchEvent(new CustomEvent('render-stopped'));
-      break;
-    case 'sandbox-status-report':
-      Log.debug('Sandbox status received. ', e.data.status);
-      break;
-    case 'sandbox-resize-confirm':
-      Log.debug('Sandbox resize confirmation received.');
-      break;
     // SPONT.
+    case 'sandbox-context': 
+      window.dispatchEvent(new CustomEvent('prog-context-update', {
+        detail: {
+          contextDefsFloat:       e.data.contextDefsFloat,
+          contextDefsInt:         e.data.contextDefsInt,
+          contextDefsBool:        e.data.contextDefsBool,
+          contextDefsText:        e.data.contextDefsText,
+          activeContextVarNames:  e.data.activeContextVarNames,
+        },
+      }));
+      break;
     case 'sandbox-ready':
       Log.debug('Sandbox ready.');
       window.dispatchEvent(new CustomEvent('canvas-ready'));
@@ -71,6 +63,25 @@ export const rxSandbox = (e: Event) => {
     case 'sandbox-restart-confirm':
       Log.debug('Sanbox restart confirmed.');
       break;
+    // RESP.
+    case 'sandbox-build-start':
+      Log.debug('Sandbox build started.')
+      window.dispatchEvent(new CustomEvent('build-started'));
+      break;
+    case 'sandbox-render-start':
+      Log.debug('Sanbox render started.');
+      window.dispatchEvent(new CustomEvent('render-started'));
+      break;
+    case 'sandbox-render-stop':
+      Log.debug('Sanbox render stopped.');
+      window.dispatchEvent(new CustomEvent('render-stopped'));
+      break;
+    case 'sandbox-status-report':
+      Log.debug('Sandbox status received. ', e.data.status);
+      break;
+    case 'sandbox-resize-confirm':
+      // Log.debug('Sandbox resize confirmation received.');
+      break;
     // I dont think a default warning is necessary. Something will be always spamming messages, for some reason.
     // default:
     //   Log.warning('Unrecognized message: ', e);
@@ -79,8 +90,6 @@ export const rxSandbox = (e: Event) => {
 
 // transmit
 export const txBuild = (sandbox: Window, script: string, width: number = 0, height: number = 0) => {
-
-  Log.warning('**HARBOR BUILD TX**');
   sandbox.postMessage({ tx: 'harbor-build', script: script, width: width, height: height }, "*");
   window.dispatchEvent(new CustomEvent('build-start', {
     detail: {
@@ -113,4 +122,8 @@ export const txStatus = (sandbox: Window) => {
 
 export const txResize = (sandbox: Window, width:number, height:number ) => {
   sandbox.postMessage({ tx: 'harbor-resize', width: width, height: height }, "*");
+};
+
+export const txContextValue = (sandbox: Window, name: string, value: any ) => {
+  sandbox.postMessage({ tx: 'harbor-context-value', name: name, value: value }, "*");
 };

@@ -68,7 +68,7 @@
   border-left: #666 1px solid;
 }
 
-:global(#app #output-and-controls) {
+:global(#app #output-wrap) {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

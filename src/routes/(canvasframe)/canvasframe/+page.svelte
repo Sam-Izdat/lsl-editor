@@ -22,7 +22,6 @@
 
 
   onMount(async () => {
-    
     const wasmScript = document.querySelector('script[src="./legitsl/LegitScriptWasm.js"]');
     if (!wasmScript) {
       reject(new Error('Script not found.'));
@@ -60,7 +59,7 @@
         let step = window.__parseLine(line);
         if (step) {
           window.__stackTrace.push(step);
-          window.txStackLine(step[0], parseInt(step[1]), parseInt(step[2]), err_hash);
+          txStackLine(step[0], parseInt(step[1]), parseInt(step[2]), err_hash);
         }
       });
     };
@@ -78,7 +77,7 @@
     window.onerror = (message, source, lineno, colno, error) => {
       const err = `Unhandled error caught by window.onerror: ${message} @ ${source}, Line: ${lineno}, Column: ${colno}`;
       const err_hash = window.__generateErrorHash(message, error.stack ?? {});
-      window.txError(error.name ?? 'error', message, err_hash);
+      txError(error.name ?? 'error', message, err_hash);
       console.log(err);
       return true; // (try to) prevent error from propagating to the console
     };
@@ -89,13 +88,13 @@
           stackLines.forEach(line => {
             let step = window.__parseLine(line);
             if (step) window.__stackTrace.push(step);
-            window.txStackLine(step[0], step[1], step[2]);
+            txStackLine(step[0], step[1], step[2]);
           });
         }
         const { message, source, lineno, colno, error } = e;
         const err = `Unhandled error caught by event listener: message: ${message} @ ${source}, Line: ${lineno}, Column: ${colno}`;
         console.log(err);
-        window.txError(error.name ?? 'error', message);
+        txError(error.name ?? 'error', message);
         console.log(err);
         e.preventDefault();
     });
@@ -106,11 +105,11 @@
       console.log(err);
       // Should be caught, but just to be thorough...
       if (e.reason?.name === 'LegitSLError' && e.reason?.info?.line) {
-        // window.txErrorFrag(e.info.code, err_hash);
-        window.txError(e.reason?.name, e.reason?.message, err_hash);
-        window.txStackLine(e.reason?.name || 'error', parseInt(e.reason?.info?.line), parseInt(e.reason?.info?.column), err_hash);
+        // txErrorFrag(e.info.code, err_hash);
+        txError(e.reason?.name, e.reason?.message, err_hash);
+        txStackLine(e.reason?.name || 'error', parseInt(e.reason?.info?.line), parseInt(e.reason?.info?.column), err_hash);
       } else {
-        window.txError('PromiseRejection', e.reason, err_hash);
+        txError('PromiseRejection', e.reason, err_hash);
         if (e.reason && e.reason.stack) {
           const stackLines = e.reason.stack.split("\n");
           window.__processStackLines(stackLines, err_hash);
@@ -125,7 +124,7 @@
     window.addEventListener('message', (e) => rxHarbor(e));
 
     // receive (serialized w/ structuredClone)
-    window.rxHarbor = async (e) => {
+    const rxHarbor = async (e) => {
       // if (e.origin !== 'parent-origin') return; 
 
       const tx = e.data.tx;
@@ -167,13 +166,16 @@
         case 'harbor-ready-ack':
           clearInterval(boardcastReady);
           break;
-        case 'harbor-status':          
+        case 'harbor-status':
           window.parent.postMessage({ tx: 'sandbox-status-report', 
             status: {
               running: window.__running,
               stackTrace: window.__stackTrace
             }
           }, e.origin);
+          break;
+        case 'harbor-context-value':
+          window.lslcore.contextValues.set(e.data.name, e.data.value);
           break;
         case 'harbor-resize':
           // We intentionally don't resize the canvas, and leave that up to the user script:
@@ -190,22 +192,33 @@
     };
 
     // transmit
-    window.txReady = () => {
+    const txReady = () => {
       boardcastReady = setInterval(() => {
         window.parent.postMessage({ tx: 'sandbox-ready'}, "*");
-      }, 10);
+      }, 1000 / cfg.TX_READY_FREQ);
     };
 
-    window.txBuildSuccess = () => {
+    const txBuildSuccess = () => {
       window.parent.postMessage({ tx: 'sandbox-build-success' }, "*");
     };
 
-    window.txError = (name, err, err_hash) => {
+    const txError = (name, err, err_hash) => {
       window.parent.postMessage({ tx: 'sandbox-error', name: name, err: err, hash: err_hash }, "*");
     };
 
-    window.txStackLine = (source, lineno, colno, err_hash) => {
+    const txStackLine = (source, lineno, colno, err_hash) => {
       window.parent.postMessage({ tx: 'sandbox-stack-line', source: source, lineno: lineno, colno: colno, hash: err_hash }, "*");
+    };
+
+    const txContext = () => {
+      window.parent.postMessage({
+        tx: 'sandbox-context',
+        contextDefsFloat:       window.lslcore.contextDefsFloat,
+        contextDefsInt:         window.lslcore.contextDefsInt,
+        contextDefsBool:        window.lslcore.contextDefsBool,
+        contextDefsText:        window.lslcore.contextDefsText,
+        activeContextVarNames:  window.lslcore.activeContextVarNames,
+      }, "*");
     };
 
     window.digest = async (script) => {
@@ -213,28 +226,27 @@
       window.__stackTrace = [];
       try { 
         await window.lslcore.update(script);
-        window.txBuildSuccess();
+        txBuildSuccess();
       } catch (e) {
         const err_hash = window.__generateErrorHash(e.message, e.stack ?? {});
         if (e.name === 'LegitSLError' && e.info?.line) {
-          // window.txErrorFrag(e.info.code, err_hash);
-          window.txError(e.name, e.message, err_hash);
-          window.txStackLine(e.name || 'error', parseInt(e.info?.line), parseInt(e.info?.column), err_hash);
+          // txErrorFrag(e.info.code, err_hash);
+          txError(e.name, e.message, err_hash);
+          txStackLine(e.name || 'error', parseInt(e.info?.line), parseInt(e.info?.column), err_hash);
         } else {
           throw(e);
         }
       }
     };
-
-    let elCanvas = document.querySelector('#output')
-    elCanvas.width = window.VIEWPORT_WIDTH;
-    elCanvas.height = window.VIEWPORT_HEIGHT;
     
-    window.lslcore.configure("#output-container canvas", "#controls-container");
+    window.lslcore.configure("#output-container canvas");
     await window.lslcore.init(); 
 
-    window.txReady();
-    // setTimeout(window.txReady, 250);
+    txReady();
+
+    setInterval(txContext, 1000 / cfg.TX_CONTEXT_FREQ);
+
+    // setTimeout(txReady, 250);
   });
 </script>
 <style>
@@ -244,10 +256,9 @@
   <script type="module" src="./legitsl/LegitScriptWasm.js"></script>
 </svelte:head>
 <div id="app">
-  <div id="output-and-controls">
+  <div id="output-wrap">
     <div id="output-container">
       <canvas id="output" width="400" height="400"></canvas>
     </div>
-    <div id="controls-container" style="display: none;"></div>
   </div>
 </div>

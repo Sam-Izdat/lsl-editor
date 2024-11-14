@@ -10,4 +10,7 @@ export { default as DrawerArchive }       from './drawer_archive.svelte';
 export { default as MonacoEditor }        from './monaco.svelte';
 export { default as InfoKeyboard }        from './info_keyboard.svelte';
 export { default as ScreenFailedFetch }   from './error_fetch.svelte';
-export { default as DebugTable }     from './debug.svelte';
+export { default as DebugTable }          from './debug.svelte';
+export { default as ProgControls }        from './controls.svelte';
+export { default as ControlsAccordion }   from './controls_accordion.svelte';
+export { default as CustomRangeSlider }   from './custom_range_slider.svelte';
