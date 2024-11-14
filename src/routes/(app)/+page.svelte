@@ -275,9 +275,13 @@
         ...modals.modalConfirm, 
         message: "Unsaved changes will be discarded. Create a new script anyway?",
         txtConfirm: "New Script",
-        onConfirm: docHandler.newDoc
+        onConfirm: () => {
+          $currentView = 0;
+          docHandler.newDoc();
+        }
       });
-    } else {
+    } else {      
+      $currentView = 0;
       docHandler.newDoc();
     }
     await reqBuild();
@@ -292,12 +296,14 @@
         ...modals.modalConfirm, 
         message: "Unsaved changes will be discarded. Load a new script anyway?",
         txtConfirm: "Load Script",
-        onConfirm: async () => { 
+        onConfirm: async () => {
+          $currentView = 0;
           await docHandler.loadDoc(uuid, adapter); 
           drawerStore.close(); 
         },
       });
     } else {
+      $currentView = 0;
       docHandler.loadDoc(uuid, adapter); 
       drawerStore.close();
     }
@@ -314,9 +320,13 @@
         ...modals.modalConfirm, 
         message: "Unsaved changes will be discarded. Fork script anyway?",
         txtConfirm: "Fork Script",
-        onConfirm: docHandler.forkDoc,
+        onConfirm: () => {
+          $currentView = 0;
+          docHandler.forkDoc();
+        },
       });
-    } else {
+    } else {      
+      $currentView = 0;
       docHandler.forkDoc();
     }
     reqRenameDoc();
@@ -329,9 +339,13 @@
         ...modals.modalConfirm, 
         message: "Unsaved changes will be discarded. Import file anyway?",
         txtConfirm: "Import File",
-        onConfirm: () => { docHandler.newDoc(content, baseFilename ?? ''); },
+        onConfirm: () => {
+          $currentView = 0;
+          docHandler.newDoc(content, baseFilename ?? ''); 
+        },
       });
     } else {
+      $currentView = 0;
       docHandler.newDoc(content, baseFilename ?? '');
     }
     modalStore.close();
