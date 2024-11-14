@@ -76,7 +76,7 @@
       <SlideToggle 
         name="ctrl-checkbox-{i}" 
         bind:checked={$contextValues[item.name]} 
-        on:input={() => {handleValueUpdate(item.name, $contextValues[item.name])}} 
+        on:change={() => {handleValueUpdate(item.name, $contextValues[item.name])}} 
         size="sm"
       >
         {item.name}

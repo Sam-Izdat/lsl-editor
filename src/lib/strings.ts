@@ -90,9 +90,11 @@ void RenderGraphMain()
 {{
   Image sc = GetSwapchainImage();
   int frame_idx = ContextInt("frame_idx")++;
-  Text("Frame index:" + frame_idx);
+  Text("Frame index: " + frame_idx);
 
-
+  bool doFractalPass = Checkbox("Fractal");
+  bool doCheckerPass = Checkbox("Checker");
+  bool doUVPass = Checkbox("UV");
 
   Image img1 = GetImage(GetSwapchainImage().GetSize(), rgba16f);
   Image img2 = GetImage(GetSwapchainImage().GetSize(), rgba16f);
@@ -100,23 +102,29 @@ void RenderGraphMain()
     img1,
     img2
   );
-  DEBUGPassUV(
-    sc.GetSize(),
-    sc
-  );
-  ContextFloat("phase") += 1e-2 * SliderFloat("Speed", 0.0f, 2.0f, 0.4f);
+
+  if (doUVPass){
+    DEBUGPassUV(
+      sc.GetSize(),
+      sc
+    );
+  }
+
+  ContextFloat("phase") += 1e-2 * SliderFloat("Speed", 0.0f, 5.0f, 0.4f);
   float color = SliderFloat("Color", 0.0f, 1.0f, 0.5f);
-  ColorPass(
-    vec3(color),
-    vec2(-0.8, cos(2.0 * (SliderFloat("P", 0.0f, 2.0f, 0.7f) + ContextFloat("phase")))),
-    sc.GetSize(),
-    sc
-  );
+  if (doFractalPass) {
+    ColorPass(
+      vec3(color),
+      vec2(-0.8, cos(2.0 * (SliderFloat("Progress", 0.0f, 2.0f, 0.7f) + ContextFloat("phase")))),
+      sc.GetSize(),
+      sc
+    );
+  }
 
-  TwoInputsShader(sc.GetSize(), img1, img2, sc);
-
+  if (doCheckerPass) {
+    TwoInputsShader(sc.GetSize(), img1, img2, sc);
+  }
 
   Text("Fps: " + GetSmoothFps());
   Text("dims: " + sc.GetSize().x + ", " + sc.GetSize().y);
-}}
-`;
+}}`;

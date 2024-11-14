@@ -41,7 +41,6 @@ let contextVarsLen:number   = 0;
 
 // All the silliness here is done in hope of limiting DOM fuckery and preventing reflow
 export const handleContextUpdate = (e: CustomEvent) => {
-
   if (!!contextDefsFloat.symmetricDifference(e.detail.contextDefsFloat).size) {
     let ctxDefsFloatArray: FloatRequest[] = Array.from(e.detail.contextDefsFloat).map((item) => JSON.parse(item));
     contextVars.update(items => {
