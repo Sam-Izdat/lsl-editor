@@ -89,7 +89,7 @@ export const rxSandbox = (e: Event) => {
 
 // transmit
 export const txBuild = (sandbox: Window, script: string, width: number = 0, height: number = 0, reset: boolean = false) => {
-  sandbox.postMessage({ tx: 'harbor-build', script: script, width: width, height: height, reset: reset}, "*");
+  sandbox.postMessage({ tx: 'harbor-build', script: script, width: width, height: height, reset: !!reset}, "*");
   window.dispatchEvent(new CustomEvent('build-start', {
     detail: {
       script:   script,
