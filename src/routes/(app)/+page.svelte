@@ -282,11 +282,12 @@
         ...modals.modalConfirm, 
         message: "Unsaved changes will be discarded. Create a new script anyway?",
         txtConfirm: "New Script",
-        onConfirm: () => {
+        onConfirm: async () => {
           $currentView = 0;
           resetContext();
           docHandler.newDoc();
           window.history.replaceState(null, '', `${base}/`);
+          await reqBuild(true);
         }
       });
     } else {      
@@ -294,8 +295,8 @@
       resetContext();
       docHandler.newDoc();
       window.history.replaceState(null, '', `${base}/`);
+      await reqBuild(true);
     }
-    await reqBuild(true);
   };
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
@@ -312,6 +313,7 @@
           await docHandler.loadDoc(uuid, adapter); 
           drawerStore.close();
           setSessionURL();
+          setTimeout(async () => { await reqBuild(true); }, 350); // wait for pane animation to complete
         },
       });
     } else {
@@ -320,11 +322,8 @@
       await docHandler.loadDoc(uuid, adapter); 
       drawerStore.close();
       setSessionURL();
+      setTimeout(async () => { await reqBuild(true); }, 350); // wait for pane animation to complete
     }
-    // wait for pane animation to complete
-    setTimeout(async () => {
-      await reqBuild(true);
-    }, 350);
   };
 
   const reqForkDoc = async () => {
@@ -333,11 +332,13 @@
         ...modals.modalConfirm, 
         message: "Unsaved changes will be discarded. Fork script anyway?",
         txtConfirm: "Fork Script",
-        onConfirm: () => {
+        onConfirm: async () => {
           $currentView = 0;
           resetContext();
           docHandler.forkDoc();
           setSessionURL();
+          reqRenameDoc();
+          await reqResetProg();
         },
       });
     } else {      
@@ -345,9 +346,9 @@
       resetContext();
       docHandler.forkDoc();
       setSessionURL();
+      reqRenameDoc();
+      await reqResetProg();
     }
-    reqRenameDoc();
-    await reqResetProg();
   };
 
   const reqImportFile = async (content: string, baseFilename?: string) => {

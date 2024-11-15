@@ -292,7 +292,7 @@
                         on:click={() => {urlAutoBuild = +!urlAutoBuild;}}
                         name="url-autobuild" value={+!defaultAutoBuild} title="Auto-Build"
                       >
-                        <Icon src="{hero.PlayCircle}" size="16" class="mx-0 my-1" solid/>
+                        <CustomIcon src={ico.ClockCycle} size='16' class="mx-0 my-1" />
                       </RadioItem>
                     </RadioGroup>
                     <RadioGroup class="mx-1" on:change={makeURL}>
