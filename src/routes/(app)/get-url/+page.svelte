@@ -31,7 +31,8 @@
           sessionStorage.setItem('importRequestFile', JSON.stringify([{ name: 'raw_content', content: data }]));
           if (reqView !== null)       sessionStorage.setItem('importRequestView', reqView);
           if (reqAutoBuild !== null)  sessionStorage.setItem('importRequestAutoBuild', reqAutoBuild);
-          if (reqReadOnly !== null)   sessionStorage.setItem('importRequestReadOnly', reqReadOnly);
+          if (reqReadOnly !== null)   sessionStorage.setItem('importRequestReadOnly', reqReadOnly);          
+          sessionStorage.setItem('importShareableURL', window.location.pathname + window.location.search + window.location.hash);
           window.location.href = `${base}/`; 
         })
         .catch(error => {

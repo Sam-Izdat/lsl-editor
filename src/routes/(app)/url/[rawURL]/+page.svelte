@@ -38,6 +38,7 @@
           if (reqAutoBuild !== null)  sessionStorage.setItem('importRequestAutoBuild', reqAutoBuild);
           if (reqReadOnly !== null)   sessionStorage.setItem('importRequestReadOnly', reqReadOnly);
           Log.info('script content loaded:', data); 
+          sessionStorage.setItem('importShareableURL', window.location.pathname + window.location.search + window.location.hash);
           window.location.href = `${base}/`;
         })
         .catch(error => {

@@ -5,12 +5,12 @@ interface Message {
   message: string;
 }
 
-export const scriptErrorLog = writable<Message[]>([]);
+export const scriptLog = writable<Message[]>([]);
 
 export function postScriptMessage(status: Message['status'], message: string) {
-  scriptErrorLog.update((log) => [...log, { status, message }]);
+  scriptLog.update((log) => [...log, { status, message }]);
 }
 
 export function clearScriptMessages() {
-  scriptErrorLog.set([]);
+  scriptLog.set([]);
 }

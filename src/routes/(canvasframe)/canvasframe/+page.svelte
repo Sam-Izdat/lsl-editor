@@ -133,8 +133,14 @@
           window.__script = e.data.script;
           window.__errorLog = [];
           window.__running = true;
-          window.parent.postMessage({ tx: 'sandbox-build-start' }, e.origin);
+          if (e.data.reset) {
+            window.lslcore.cancelLoop();
+            await window.lslcore.init();
+            window.lslcore.executeLoop();
+          }
           await window.digest(window.__script); // fire-and-forget w/o await, msg below confirms init, not success
+
+          window.parent.postMessage({ tx: 'sandbox-build-start' }, e.origin);
           break;
         case 'harbor-stop':
           window.__running = false;
@@ -152,7 +158,7 @@
           window.parent.postMessage({ tx: 'sandbox-render-start' }, e.origin);
           break;
         case 'harbor-reset':
-          window.lslcore.cancelLoop();       
+          window.lslcore.cancelLoop();
           await window.lslcore.init();
           await window.digest(window.__script);
           if (window.__running) {

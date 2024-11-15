@@ -2,7 +2,7 @@
   import { Log } from '$lib';
   import { onMount, onDestroy } from 'svelte';
   import { popup } from '@skeletonlabs/skeleton';
-  import { scriptErrorLog } from '$lib/stores'; // Store for message queue
+  import { scriptLog } from '$lib/stores'; // Store for message queue
   import { AppRailAnchor } from '@skeletonlabs/skeleton';
 
   import { isPlaying } from '$lib/stores';
@@ -22,7 +22,7 @@
 
   let messages: Message[] = [];
   
-  scriptErrorLog.subscribe((log) => {
+  scriptLog.subscribe((log) => {
     messages = log;
   });
 

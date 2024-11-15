@@ -16,10 +16,9 @@
   import * as km from '$lib/keymap';
 
   import * as harbor from '$lib/harbor';
-  import { debugStore, resetContext } from '$lib/stores';
 
-  // Global state
   import { 
+    // Global state
     currentView,
     paneSizes,
     isAutoBuild,
@@ -30,6 +29,9 @@
     canvasIsReady,
     editorIsReady,
     isPlaying,
+    // Context & errors
+    debugStore, 
+    resetContext,
   } from '$lib/stores';
 
   // Sessions
@@ -45,6 +47,9 @@
     ScreenHandler,
     MobileHandler
   } from '$lib';
+
+  // Util
+  import { encodeUUIDToURI, decodeURIToUUID } from '$lib';
 
   let docHandler;     // Document actions (e.g. update, save, new, rename, make read-only)
   let navHandler;     // SPA "navigation"
@@ -126,6 +131,10 @@
     return true;
   };
 
+  const setSessionURL = () => {
+    window.history.replaceState(null, '', `${base}?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
+  };
+
   // Global status changing stuff
   const canvasReady = () => {
     let canvasframe = document.querySelector("#canvasframe");
@@ -173,7 +182,7 @@
 
   let autoBuildTimeoutID: number;
 
-  const reqBuild = async () => {
+  const reqBuild = async (reset: boolean = false) => {
     Log.debug('Build requested');
     Log.clearScriptLog();
     debugStore.clear();
@@ -189,7 +198,7 @@
     canvasframe.width = width;
     canvasframe.height = height;
 
-    harbor.txBuild(canvasframeWindow, editorVal, width, height);
+    harbor.txBuild(canvasframeWindow, editorVal, width, height, reset);
   };
 
   const reqStopAnimation = async () => {
@@ -276,15 +285,16 @@
           $currentView = 0;
           resetContext();
           docHandler.newDoc();
+          window.history.replaceState(null, '', `${base}/`);
         }
       });
     } else {      
       $currentView = 0;
       resetContext();
       docHandler.newDoc();
+      window.history.replaceState(null, '', `${base}/`);
     }
-    await reqBuild();
-    await reqResetProg();
+    await reqBuild(true);
   };
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
@@ -299,19 +309,20 @@
           $currentView = 0;
           resetContext();
           await docHandler.loadDoc(uuid, adapter); 
-          drawerStore.close(); 
+          drawerStore.close();
+          setSessionURL();
         },
       });
     } else {
       $currentView = 0;
       resetContext();
-      docHandler.loadDoc(uuid, adapter); 
+      await docHandler.loadDoc(uuid, adapter); 
       drawerStore.close();
+      setSessionURL();
     }
     // wait for pane animation to complete
     setTimeout(async () => {
-      await reqBuild();
-      await reqResetProg();
+      await reqBuild(true);
     }, 350);
   };
 
@@ -325,12 +336,14 @@
           $currentView = 0;
           resetContext();
           docHandler.forkDoc();
+          setSessionURL();
         },
       });
     } else {      
       $currentView = 0;      
       resetContext();
       docHandler.forkDoc();
+      setSessionURL();
     }
     reqRenameDoc();
     await reqResetProg();
@@ -346,17 +359,18 @@
           $currentView = 0;
           resetContext();
           docHandler.newDoc(content, baseFilename ?? ''); 
+          setSessionURL();
         },
       });
     } else {
       $currentView = 0;      
       resetContext();
       docHandler.newDoc(content, baseFilename ?? '');
+      setSessionURL();
     }
     modalStore.close();
     reqRenameDoc(baseFilename ?? '');
-    await reqBuild();
-    await reqResetProg();
+    await reqBuild(true);    
   };
 
   const reqExportFile = () => {
@@ -380,12 +394,16 @@
           message: `You are saving over an old version. Overwrite it?`,
           txtConfirm: `Overwrite v${dsCurrentSession.versionActive}`,
           txtCancel: `Save as v${dsCurrentSession.versionCount}`,
-          onConfirm: async () => { await docHandler.saveDoc() },
+          onConfirm: async () => { 
+            await docHandler.saveDoc();
+            setSessionURL();
+          },
           onCancel: reqSaveDocNewVersion,
         });
       } else { 
         await docHandler.saveDoc(); 
         await docHandler.refreshDocList(); 
+        setSessionURL();
       }
     } else { Log.toastInfo('no changes to save') }
     await reqBuild();
@@ -534,6 +552,7 @@
       }
 
       docHandler.newDoc(contentToLoad);
+      window.history.replaceState(null, '', `${base}/`)
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
@@ -572,6 +591,11 @@
       if (importRequestReadOnly !== null) {
         !!+importRequestReadOnly ? docHandler.disableEditing() : docHandler.enableEditing();
         sessionStorage.removeItem('importRequestReadOnly');
+      }
+      const importShareableURL = sessionStorage.getItem('importShareableURL');
+      if (importShareableURL !== null) {
+        window.history.replaceState(null, '', importShareableURL);
+        sessionStorage.removeItem('importShareableURL');
       }
     }
   });
