@@ -183,6 +183,7 @@
   let autoBuildTimeoutID: number;
 
   const reqBuild = async (reset: boolean = false) => {
+    reset = typeof reset === 'boolean' ? reset : false;
     Log.debug('Build requested');
     Log.clearScriptLog();
     debugStore.clear();
