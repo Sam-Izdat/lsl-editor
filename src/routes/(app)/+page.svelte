@@ -32,6 +32,7 @@
     // Context & errors
     debugStore, 
     resetContext,
+    contextListen,
   } from '$lib/stores';
 
   // Sessions
@@ -148,6 +149,7 @@
     Log.scriptSuccess("build completed");
     const flashCol = $isDark ? cfg.BUILD_COL_SUCCESS[0] : cfg.BUILD_COL_SUCCESS[1];
     pulseEditorBackground(flashCol, cfg.BUILD_FLASH_DUR);
+    $contextListen = true;
   };
 
   const buildError = () => {
@@ -284,6 +286,7 @@
         txtConfirm: "New Script",
         onConfirm: async () => {
           $currentView = 0;
+          $contextListen = false;
           resetContext();
           docHandler.newDoc();
           window.history.replaceState(null, '', `${base}/`);
@@ -292,6 +295,7 @@
       });
     } else {      
       $currentView = 0;
+      $contextListen = false;
       resetContext();
       docHandler.newDoc();
       window.history.replaceState(null, '', `${base}/`);
@@ -309,20 +313,26 @@
         txtConfirm: "Load Script",
         onConfirm: async () => {
           $currentView = 0;
+          $contextListen = false;
           resetContext();
           await docHandler.loadDoc(uuid, adapter); 
           drawerStore.close();
           setSessionURL();
-          setTimeout(async () => { await reqBuild(true); }, 350); // wait for pane animation to complete
+          setTimeout(async () => { 
+            await reqBuild(true); 
+          }, 350); // wait for pane animation to complete
         },
       });
     } else {
       $currentView = 0;
+      $contextListen = false;
       resetContext();
       await docHandler.loadDoc(uuid, adapter); 
       drawerStore.close();
       setSessionURL();
-      setTimeout(async () => { await reqBuild(true); }, 350); // wait for pane animation to complete
+      setTimeout(async () => { 
+        await reqBuild(true); 
+      }, 350); // wait for pane animation to complete
     }
   };
 
@@ -359,13 +369,15 @@
         txtConfirm: "Import File",
         onConfirm: () => {
           $currentView = 0;
+          $contextListen = false;
           resetContext();
           docHandler.newDoc(content, baseFilename ?? ''); 
           setSessionURL();
         },
       });
     } else {
-      $currentView = 0;      
+      $currentView = 0;
+      $contextListen = false;  
       resetContext();
       docHandler.newDoc(content, baseFilename ?? '');
       setSessionURL();
