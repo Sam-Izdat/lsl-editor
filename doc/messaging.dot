@@ -1,0 +1,45 @@
+digraph G {
+
+  subgraph cluster_editor_window {
+    style=filled;
+    color=lightgrey;
+    label = "editor window context";
+     subgraph cluster_0 {
+        style=filled;
+        color=lightblue;
+        node [style=filled,color=white];
+        "[app-message-module] ('harbor')";
+        "[app-internal-events]";
+        "[app-message-module] ('harbor')" -> "[app-internal-events]";
+        "[app-internal-events]"->"[app-routes/stores/components]";
+        "[app-routes/stores/components]" -> "[app-message-module] ('harbor')";
+        label = "editor (app)";
+      }
+  }
+
+  subgraph cluster_sandboxed_iframe {
+    style=filled;
+    color=lightgrey;
+    label = "sandboxed iframe window context";
+    node [style=filled];
+    
+    subgraph cluster_1 {
+      "[cf-messsage-module] ('sandbox')";
+      label = "sandbox (canvasframe)";
+      color=lightblue;
+    }
+    
+    subgraph cluster_2 {
+      "window.lslcore";
+      label = "legitsl-web-core";
+      color=cornsilk;
+    }
+    
+    "[cf-messsage-module] ('sandbox')" -> "window.lslcore";
+    "window.lslcore" -> "[cf-messsage-module] ('sandbox')";
+  }
+
+  "[app-message-module] ('harbor')" -> "postMessage" -> "[cf-messsage-module] ('sandbox')";
+  "[cf-messsage-module] ('sandbox')" -> "postMessage" -> "[app-message-module] ('harbor')";
+
+}
