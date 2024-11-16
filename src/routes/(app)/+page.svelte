@@ -149,7 +149,7 @@
     Log.scriptSuccess("build completed");
     const flashCol = $isDark ? cfg.BUILD_COL_SUCCESS[0] : cfg.BUILD_COL_SUCCESS[1];
     pulseEditorBackground(flashCol, cfg.BUILD_FLASH_DUR);
-    setTimeout(() => { $contextListen = true; }, 100); // slight delay to make sure it's new context
+    setTimeout(() => { $contextListen = true; }, 500); // slight delay to make sure it's new context
   };
 
   const buildError = () => {
