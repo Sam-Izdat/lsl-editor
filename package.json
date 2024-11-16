@@ -1,6 +1,6 @@
 {
   "name": "lsl-editor",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "private": true,
   "scripts": {
     "dev": "npm run get-localcore && cross-env BUILD_TYPE=static vite dev",
