@@ -52,11 +52,10 @@ interface TextRequet {
 
 export const contextVars    = writable<any[]>([]);
 export const contextValues  = writable<any>({});
-export const contextListen  = writable<bool>(true);
+export const contextListen  = writable<bool>(false);
 let contextVarsLen:number   = 0;
 
 export const resetContext = () => {
-  contextListen.set(false);
   contextVarsLen = 0;
   contextDefsFloat.clear();
   contextDefsInt.clear();
@@ -66,12 +65,6 @@ export const resetContext = () => {
   contextValues.set({});
   contextVars.set([]);
   sendContextReset();
-  // FIXME: Sandbox needs some time to follow through with context updates upon loading a new 
-  // script. This is not the way to do it, but since there's no ack - we just pause context updates 
-  // long enough for they're up to date when resumed. Otherwise, defs will just come streaming 
-  // back in -- and if a vacated script shares variable names with the one being loaded, default values 
-  // from the former will carry over to the latter.
-  setTimeout(() => { contextListen.set(true); }, 500);
 };
 
 // All the silliness here is done in hope of limiting DOM fuckery and preventing reflow
@@ -135,7 +128,6 @@ export const handleContextUpdate = (e: CustomEvent) => {
     let ctxDefsBoolArray: BoolRequest[] = Array.from(e.detail.contextDefsBool).map((item) => JSON.parse(item));
     contextVars.update(items => {
       for (let i in ctxDefsBoolArray) {
-        console.log(ctxDefsBoolArray[i].name, ctxDefsBoolArray[i].def_val);
         let idx = parseInt(ctxDefsBoolArray[i].sort_idx);
         if (
           items[idx] === undefined || 
