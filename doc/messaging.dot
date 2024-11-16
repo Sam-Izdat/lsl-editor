@@ -24,7 +24,7 @@ digraph G {
     node [style=filled];
     
     subgraph cluster_1 {
-      "[cf-messsage-module] ('sandbox')";
+      "[cf-message-module] ('sandbox')";
       label = "sandbox (canvasframe)";
       color=lightblue;
     }
@@ -35,11 +35,11 @@ digraph G {
       color=cornsilk;
     }
     
-    "[cf-messsage-module] ('sandbox')" -> "window.lslcore";
-    "window.lslcore" -> "[cf-messsage-module] ('sandbox')";
+    "[cf-message-module] ('sandbox')" -> "window.lslcore";
+    "window.lslcore" -> "[cf-message-module] ('sandbox')";
   }
 
-  "[app-message-module] ('harbor')" -> "postMessage" -> "[cf-messsage-module] ('sandbox')";
-  "[cf-messsage-module] ('sandbox')" -> "postMessage" -> "[app-message-module] ('harbor')";
+  "[app-message-module] ('harbor')" -> "postMessage" -> "[cf-message-module] ('sandbox')";
+  "[cf-message-module] ('sandbox')" -> "postMessage" -> "[app-message-module] ('harbor')";
 
 }

@@ -11,7 +11,7 @@ export default defineConfig({
     __BUILD_TYPE__: JSON.stringify(process.env.BUILD_TYPE)
   },
   optimizeDeps: {
-    exclude: ['./src/lib/vendor/LegitScriptWasm.js', './src/lib/vendor/LegitScriptWasm.js']
+    //exclude: ['./src/lib/vendor/LegitScriptWasm.js', './src/lib/vendor/LegitScriptWasm.js']
   },
-  ssr: { noExternal: ['./src/lib/vendor/LegitScriptWasm.js'] }
+  //ssr: { noExternal: ['./src/lib/vendor/LegitScriptWasm.js'] }
 });
