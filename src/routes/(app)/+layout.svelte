@@ -11,6 +11,7 @@
   import { initializeStores, Modal, Toast, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';  
   import type { DrawerSettings, DrawerStore } from '@skeletonlabs/skeleton';
   import { drawerContentStore  } from '$lib/stores/drawer';
+  import { browser } from '$app/environment';
   initializeStores();
   let drawerContent;
   let props = {};
@@ -37,16 +38,18 @@
     baseTraceLevel:   Log.Level[dev_mode ? cfg.TRACE_LEVEL_DEV : cfg.TRACE_LEVEL_PROD],
   });
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js?v2', {
-        scope: '.' 
-    }).then(function(registration) {
-        // Registration was successful
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(err) {
-        // registration failed :(
-        console.log('ServiceWorker registration failed: ', err);
-    });
+  if (browser) {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js', {
+          scope: '.' 
+      }).then(function(registration) {
+          // Registration was successful
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(err) {
+          // registration failed :(
+          console.log('ServiceWorker registration failed: ', err);
+      });
+    }
   }
 </script>
 
