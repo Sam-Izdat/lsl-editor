@@ -576,14 +576,6 @@
         mobileHandler.orientationChange();
       };
 
-      // Turn off editing by default on mobile devices, because soft keys suck
-      
-
-      monacoEditor.onDidLayoutChange(() => { monacoEditor.focus() });
-
-      // window.addEventListener('key-stop-playback', reqClearStopAnimation);
-
-
       if (Device.isMobile){
         if (cfg.MOBILE_READONLY) docHandler.disableEditing();
       }
@@ -591,6 +583,7 @@
 
       await reqBuild();
       await reqStartAnimation();
+      monacoEditor.focus();
 
       const importRequestAutoBuild = sessionStorage.getItem('importRequestAutoBuild');
       if (importRequestAutoBuild !== null) {
