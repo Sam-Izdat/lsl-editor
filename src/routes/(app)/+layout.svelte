@@ -36,6 +36,18 @@
     baseLogLevel:     Log.Level[dev_mode ? cfg.LOG_LEVEL_DEV : cfg.LOG_LEVEL_PROD], 
     baseTraceLevel:   Log.Level[dev_mode ? cfg.TRACE_LEVEL_DEV : cfg.TRACE_LEVEL_PROD],
   });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js?v2', {
+        scope: '.' 
+    }).then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+    });
+  }
 </script>
 
 <svelte:head>
