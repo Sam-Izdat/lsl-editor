@@ -16,6 +16,9 @@ export default defineConfig({
           {
             urlPattern: /\.(?:js|wasm|css|png|jpg|jpeg|svg|woff2)$/,
             handler: 'CacheFirst',
+            options: {
+              cacheName: 'dynamic-resources',
+            },
           },
           {
             urlPattern: /.*/,
