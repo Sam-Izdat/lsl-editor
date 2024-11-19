@@ -73,13 +73,13 @@
             if (referer && referer.includes('/canvasframe')) {
               newHeaders.set(
                 'Content-Security-Policy',
-                "default-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; worker-src 'none';"
+                "default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self'; worker-src 'none';"
               );
             } else {
               // Apply full-permission CSP for main app requests
               newHeaders.set(
                 'Content-Security-Policy',
-                "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;"
+                "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:; worker-src 'self' blob:;"
               );
             }
 

@@ -805,7 +805,9 @@
         height="800" 
         src="./canvasframe?v={__APP_VERSION__}" 
         scrolling="no" 
-        sandbox="allow-scripts allow-same-origin"  
+        sandbox="allow-scripts"  
+        allow="fullscreen"
+        allowfullscreen="false" 
         title="canvasframe"> 
     </div>
 
