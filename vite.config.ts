@@ -1,34 +1,18 @@
 import { purgeCss } from 'vite-plugin-tailwind-purgecss';
-import { VitePWA } from 'vite-plugin-pwa';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
 import pkg from './package.json';
 
 export default defineConfig({
 	plugins: [
     sveltekit(), 
-    purgeCss(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'script',
+    SvelteKitPWA({
       workbox: {
-        maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
-        globPatterns: ['**/*.{js,wasm,css,html,png,jpg}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^\/$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'index-cache',
-            },
-          },
-          {
-            urlPattern: /.*/,
-            handler: 'NetworkFirst',
-          },
-        ],
-      },
+        maximumFileSizeToCacheInBytes: 10 * 1024 ** 2
+      }
     }),
+    purgeCss(),
   ],
   define: {
     __APP_NAME__: JSON.stringify(pkg.name),
