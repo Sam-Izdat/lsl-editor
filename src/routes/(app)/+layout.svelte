@@ -49,8 +49,10 @@
     //     console.log('ServiceWorker registration failed: ', err);
     // });
     self.addEventListener('fetch', (event) => {
+      console.warn('FETCH REQUEST');
       event.respondWith(
         (async () => {
+
           const request = event.request;
           const referer = request.headers.get('Referer'); // Originating page
           const origin = request.headers.get('Origin');   // Origin of the requester
@@ -68,9 +70,9 @@
           // Modify the response to include appropriate CSP headers
           if (response) {
             const newHeaders = new Headers(response.headers);
-
             // Apply sandboxed CSP if the request comes from the iframe
             if (referer && referer.includes('/canvasframe')) {
+              console.warn('CANVASFRAME REQUEST');
               newHeaders.set(
                 'Content-Security-Policy',
                 "default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self'; worker-src 'none';"
