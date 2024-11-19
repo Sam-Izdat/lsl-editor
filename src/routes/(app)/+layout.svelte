@@ -48,32 +48,40 @@
         // registration failed :(
         console.log('ServiceWorker registration failed: ', err);
     });
-    
     self.addEventListener('fetch', (event) => {
       event.respondWith(
         (async () => {
-          const url = new URL(event.request.url);
+          const request = event.request;
+          const referer = request.headers.get('Referer'); // Originating page
+          const origin = request.headers.get('Origin');   // Origin of the requester
 
           let response;
 
-          // Try to match the request with the cache first for iframe-specific resources
-          if (url.pathname.startsWith('/')) {
-            response = await caches.match(event.request);
-          }
+          // Serve from cache if available
+          response = await caches.match(request);
 
-          // If not in cache or not an iframe resource, fetch it from the network
+          // Fetch from network if not in cache
           if (!response) {
-            response = await fetch(event.request);
+            response = await fetch(request);
           }
 
-          // Modify the response to include CSP headers
+          // Modify the response to include appropriate CSP headers
           if (response) {
             const newHeaders = new Headers(response.headers);
 
-            newHeaders.set(
-              'Content-Security-Policy',
-              "default-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none';"
-            );
+            // Apply sandboxed CSP if the request comes from the iframe
+            if (referer && referer.includes('/canvasframe')) {
+              newHeaders.set(
+                'Content-Security-Policy',
+                "default-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; worker-src 'none';"
+              );
+            } else {
+              // Apply full-permission CSP for main app requests
+              newHeaders.set(
+                'Content-Security-Policy',
+                "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;"
+              );
+            }
 
             return new Response(response.body, {
               status: response.status,
@@ -87,6 +95,7 @@
         })()
       );
     });
+
   }
 </script>
 
