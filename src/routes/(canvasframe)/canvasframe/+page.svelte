@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount, tick } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { cfg } from '$root/webui.config.js';
 
   let broadcastReady: ReturnType<typeof setInterval>;

@@ -38,18 +38,55 @@
     baseTraceLevel:   Log.Level[dev_mode ? cfg.TRACE_LEVEL_DEV : cfg.TRACE_LEVEL_PROD],
   });
 
-  if (browser) {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js', {
-          scope: '.' 
-      }).then(function(registration) {
-          // Registration was successful
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }, function(err) {
-          // registration failed :(
-          console.log('ServiceWorker registration failed: ', err);
-      });
-    }
+  if (browser && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js', {
+        scope: '.' 
+    }).then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+    });
+    
+    self.addEventListener('fetch', (event) => {
+      event.respondWith(
+        (async () => {
+          const url = new URL(event.request.url);
+
+          let response;
+
+          // Try to match the request with the cache first for iframe-specific resources
+          if (url.pathname.startsWith('/')) {
+            response = await caches.match(event.request);
+          }
+
+          // If not in cache or not an iframe resource, fetch it from the network
+          if (!response) {
+            response = await fetch(event.request);
+          }
+
+          // Modify the response to include CSP headers
+          if (response) {
+            const newHeaders = new Headers(response.headers);
+
+            newHeaders.set(
+              'Content-Security-Policy',
+              "default-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none';"
+            );
+
+            return new Response(response.body, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: newHeaders,
+            });
+          }
+
+          // Fallback in case of no response (e.g., offline and not cached)
+          return new Response('Offline', { status: 503 });
+        })()
+      );
+    });
   }
 </script>
 
