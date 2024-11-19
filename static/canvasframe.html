@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:; worker-src 'self' blob:;">
+  <meta http-equiv="Permissions-Policy" content="storage-access=(), fullscreen=(self)">
+  <script>
+    const originalFetch = window.fetch;
+    const fetchByPost = async (url, options) => {
+      return new Promise((resolve, reject) => {
+        const id = Math.random().toString(36).substr(2); // Unique ID for response tracking
+        const listener = (event) => {
+          if (event.data.id === id) {
+            window.removeEventListener("message", listener);
+            if (event.data.error) {
+              reject(event.data.error);
+            } else if (event.data.isWasm) {
+              // Handle WASM ArrayBuffer response
+              resolve(new Response(event.data.response, { headers: { "Content-Type": "application/wasm" } }));
+            } else {
+              // Handle regular text response
+              resolve(new Response(event.data.response));
+            }
+          }
+        };
+        window.addEventListener("message", listener);
+
+        // Send request to parent
+        setTimeout(() => { window.parent.postMessage({ tx: "sandbox-fetch", id, url }, "*"); }, 1000);
+      });
+    };
+
+    const loadESModuleByPost = async (url) => {
+      try {
+        const response = await fetchByPost(url); // Get the Response object
+        const moduleCode = await response.text(); // Extract the JS code as a string
+
+        // Create a <script> tag with type="module"
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.textContent = moduleCode;
+
+        // Append the script to the document
+        document.body.appendChild(script);
+
+        console.log('Module injected and executed.');
+      } catch (error) {
+        console.error('Failed to load module via script tag:', error);
+      }
+    };
+
+    const loadModuleByScriptTag = (url) => {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = url;
+
+        script.onload = () => {
+          console.log('Module loaded successfully.');
+          resolve();
+        };
+
+        script.onerror = (error) => {
+          console.error('Failed to load module:', error);
+          reject(error);
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    window.fetch = fetchByPost;
+  </script>
+  </head>
+  <body>
+    <div style="display: contents" class="h-full overflow-hidden">
+      <div id="app">
+        <div id="output-wrap">
+          <div id="output-container">
+            <canvas id="output" width="400" height="400"></canvas>
+          </div>
+        </div>
+      </div> 
+    </div>
+    <script>
+    (async () => {
+      let lwcURL = './legitsl/LegitScriptWasm.js';
+      if (!navigator.onLine) {   
+        window.fetch = fetchByPost;
+        await loadESModuleByPost(lwcURL);
+      } else {
+        await loadModuleByScriptTag(lwcURL);
+      }
+
+      let broadcastReady; //: ReturnType<typeof setInterval>;
+      let cfg = {
+        TX_CONTEXT_FREQ: 60,
+        TX_READY_FREQ: 60,
+      };
+      const waitForWasm = async () => {
+        return new Promise((resolve, reject) => {
+          if (window.lslcore?.configure) {
+            resolve();
+            return;
+          }
+
+          const intervalId = setInterval(() => {
+            if (window.lslcore?.configure) {
+              clearInterval(intervalId); 
+              resolve(); 
+            }
+          }, 10);
+        });
+      };
+
+      await waitForWasm(); 
+
+      window.__running = false;       // whether animation is running
+      window.__script = '';           // script contents
+      window.__scriptLen = 0;         // length of script (for scope)
+      window.__errorLog = [];         // persists from build-start to build-start
+      window.VIEWPORT_WIDTH = 800;    // width of parent UI viewport (max canvas width)
+      window.VIEWPORT_HEIGHT = 600;   // height of parent UI viewport (max canvas height)
+
+      console.error = (...e) => console.log(...e); 
+
+      // TODO: remove this, as it is only pertinent to taichi.js
+      window.__parseLine = (line) => {
+        const match = line.match(/(?:<anonymous>|eval):(\d+):(\d+)/);
+        if (match) {
+          const [_, lineno, colno] = match;
+          if (lineno > (window.__scriptLen + 1)) return null; // out of range
+          const sourceMatch = line.match(/(.+?(?=@))|(?:at\s+)(\w+)/);
+          let source = sourceMatch !== null ? sourceMatch[1] || sourceMatch[2] : '';
+          if (source == 'eval' || source == '') source = 'root';
+          return [source, lineno - 1, colno];
+        }
+        return null;
+      };
+
+      window.__processStackLines = (stackLines, err_hash) => {
+        stackLines.forEach(line => {
+          let step = window.__parseLine(line);
+          if (step) {
+            window.__errorLog.push(step);
+            txStackLine(step[0], parseInt(step[1]), parseInt(step[2]), err_hash);
+          }
+        });
+      };
+
+      window.__generateErrorHash = (errorMessage, stack) => {
+        let str = errorMessage + JSON.stringify(stack);
+        let hash = 5381;
+        for (let i = 0; i < str.length; i++) {
+          hash = (hash * 33) ^ str.charCodeAt(i);
+        }
+        return hash >>> 0;
+      };
+
+      // herein we try to keep the errors piped to the editor and prevent them from bubbling up
+      window.onerror = (message, source, lineno, colno, error) => {
+        const err = `Unhandled error caught by window.onerror: ${message} @ ${source}, Line: ${lineno}, Column: ${colno}`;
+        const err_hash = window.__generateErrorHash(message, error.stack ?? {});
+        txError(error.name ?? 'error', message, err_hash);
+        console.log(err);
+        return true; // (try to) prevent error from propagating to the console
+      };
+      window.addEventListener('error', e => {
+          if (e.error && e.error.stack) {
+            const stackLines = e.error.stack.split("\n");
+            
+            stackLines.forEach(line => {
+              let step = window.__parseLine(line);
+              if (step) window.__errorLog.push(step);
+              txStackLine(step[0], step[1], step[2]);
+            });
+          }
+          const { message, source, lineno, colno, error } = e;
+          const err = `Unhandled error caught by event listener: message: ${message} @ ${source}, Line: ${lineno}, Column: ${colno}`;
+          console.log(err);
+          txError(error.name ?? 'error', message);
+          console.log(err);
+          e.preventDefault();
+      });
+      window.onunhandledrejection = (e) => {
+        const err = 'caught in onunhandledrejection: ' + e.reason || 'unknown async error';
+        console.error(e.reason.stack);
+        const err_hash = window.__generateErrorHash(e.reason, {});
+        console.log(err);
+        // Should be caught, but just to be thorough...
+        if (e.reason?.name === 'LegitSLError' && e.reason?.info?.line) {
+          // txErrorFrag(e.info.code, err_hash);
+          txError(e.reason?.name, e.reason?.message, err_hash);
+          txStackLine(e.reason?.name || 'error', parseInt(e.reason?.info?.line), parseInt(e.reason?.info?.column), err_hash);
+        } else {
+          txError('PromiseRejection', e.reason, err_hash);
+          if (e.reason && e.reason.stack) {
+            const stackLines = e.reason.stack.split("\n");
+            window.__processStackLines(stackLines, err_hash);
+          }
+        }
+        e.preventDefault();
+        return true; // (try to) prevent error from propagating to the console
+      };
+
+      window.addEventListener('message', (e) => rxHarbor(e));
+
+      // receive (serialized w/ structuredClone)
+      const rxHarbor = async (e) => {
+        // if (e.origin !== 'parent-origin') return; 
+
+        const tx = e.data.tx;
+        switch (tx) {
+          case 'harbor-build':
+            window.__script = e.data.script;
+            window.__errorLog = [];
+            window.__running = true;
+            if (e.data.reset) {
+              window.lslcore.cancelLoop();
+              await window.lslcore.init();
+              window.lslcore.executeLoop();
+            }
+            await window.digest(window.__script); // fire-and-forget w/o await, msg below confirms init, not success
+
+            window.parent.postMessage({ tx: 'sandbox-build-start' }, e.origin);
+            break;
+          case 'harbor-stop':
+            window.__running = false;
+            window.lslcore.cancelLoop();
+            window.parent.postMessage({ tx: 'sandbox-render-stop' }, e.origin);
+            break;
+          case 'harbor-start':
+            window.__running = true;
+            window.lslcore.executeLoop();
+            if (e.data.width && e.data.height){
+              window.VIEWPORT_WIDTH = parseInt(e.data.width);
+              window.VIEWPORT_HEIGHT = parseInt(e.data.height);
+            }
+            window.lslcore.executeLoop();
+            window.parent.postMessage({ tx: 'sandbox-render-start' }, e.origin);
+            break;
+          case 'harbor-reset':
+            window.lslcore.cancelLoop();
+            await window.lslcore.init();
+            await window.digest(window.__script);
+            if (window.__running) {
+              window.lslcore.executeLoop();
+            }
+            break;
+          case 'harbor-ready-ack':
+            clearInterval(broadcastReady);
+            break;
+          case 'harbor-status':
+            window.parent.postMessage({ tx: 'sandbox-status-report', 
+              status: {
+                running: window.__running,
+                stackTrace: window.__errorLog
+              }
+            }, e.origin);
+            break;
+          case 'harbor-context-value':
+            window.lslcore.contextValues.set(e.data.name, e.data.value);
+            break;
+          case 'harbor-context-reset':
+            window.lslcore.contextValues.clear();
+            break;
+          case 'harbor-resize':
+            window.VIEWPORT_WIDTH = parseInt(e.data.height);
+            window.VIEWPORT_HEIGHT = parseInt(e.data.width);
+            window.parent.postMessage({ tx: 'sandbox-resize-confirm'}, e.origin);
+            break;
+          default:
+            console.warn('Unknown command');
+        }
+      };
+
+      // transmit
+      const txReady = () => {
+        broadcastReady = setInterval(() => {
+          window.parent.postMessage({ tx: 'sandbox-ready'}, "*");
+        }, 1000 / cfg.TX_READY_FREQ);
+      };
+
+      const txBuildSuccess = () => {
+        window.parent.postMessage({ tx: 'sandbox-build-success' }, "*");
+      };
+
+      const txError = (name, err, err_hash) => {
+        window.parent.postMessage({ tx: 'sandbox-error', name: name, err: err, hash: err_hash }, "*");
+      };
+
+      const txStackLine = (source, lineno, colno, err_hash) => {
+        window.parent.postMessage({ tx: 'sandbox-stack-line', source: source, lineno: lineno, colno: colno, hash: err_hash }, "*");
+      };
+
+      const txContext = () => {
+        window.parent.postMessage({
+          tx: 'sandbox-context',
+          contextDefsFloat:       window.lslcore.contextDefsFloat,
+          contextDefsInt:         window.lslcore.contextDefsInt,
+          contextDefsBool:        window.lslcore.contextDefsBool,
+          contextDefsText:        window.lslcore.contextDefsText,
+          activeContextVarNames:  window.lslcore.activeContextVarNames,
+        }, "*");
+      };
+
+      window.digest = async (script) => {
+        window.__scriptLen = script.split(/\r\n|\r|\n/).length; // lines
+        window.__errorLog = [];
+        try { 
+          await window.lslcore.update(script);
+          txBuildSuccess();
+        } catch (e) {
+          const err_hash = window.__generateErrorHash(e.message, e.stack ?? {});
+          if (e.name === 'LegitSLError' && e.info?.line) {
+            // txErrorFrag(e.info.code, err_hash);
+            txError(e.name, e.message, err_hash);
+            txStackLine(e.name || 'error', parseInt(e.info?.line), parseInt(e.info?.column), err_hash);
+          } else {
+            throw(e);
+          }
+        }
+      };
+
+      window.lslcore.configure("#output-container canvas");
+      await window.lslcore.init(); 
+
+      txReady();
+
+      setInterval(txContext, 1000 / cfg.TX_CONTEXT_FREQ);
+    })();
+    </script>
+  </body>
+  <style>
+    html {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+      font-family: sans-serif;
+    }
+
+    #compilation-result {
+      background-color: #111;
+      color: #fff;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      height: 1vh;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    #app #editor {
+      height: 100%;
+      flex: 1;
+      box-sizing: border-box;
+      padding: 1px;
+    }
+
+    #app #editor .compileErrorGlyph {
+      background-color: rgba(255, 0, 0, 0.1);
+    }
+
+    #app #editor .compileErrorBackground {
+      /* background-color: red; */
+    }
+
+    #app divider {
+      cursor: ew-resize;
+      width: 0px;
+      flex: 0 0 auto;
+      padding: 0 3px;
+    }
+    #app divider::before {
+      content: "";
+      display: block;
+      width: 1px;
+      height: 100%;
+      background: #AAA;
+      margin: 0 auto;
+      border-right: #666 1px solid;
+      border-left: #666 1px solid;
+
+    }
+    #app divider:hover::before {
+      background: #EEE;
+      margin: 0 auto;
+      border-right: #666 1px solid;
+      border-left: #666 1px solid;
+    }
+
+    #app #output-wrap {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      flex: 1 1 auto;
+    }
+
+    #app #output-container {
+      height: 100%;
+      width: 100%;
+      margin: auto;
+      position: relative;
+      flex: 2;
+    }
+
+    #app #output-container canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    #app #controls-container {
+      width: 100%;
+      flex: 1;
+      overflow: auto;
+    }
+
+    #app #controls-container control {
+      display: block;
+      margin-top: 1em;
+      margin-left: 1em;
+    }
+  </style>
+</html>

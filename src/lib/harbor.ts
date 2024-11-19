@@ -35,6 +35,31 @@ export const rxSandbox = (e: Event) => {
       Log.debug('Sandbox ready.');
       window.dispatchEvent(new CustomEvent('canvas-ready'));
       break;
+
+    case 'sandbox-fetch':  
+      (async () => {
+        const { id, url, options } = e.data;
+        if (!id || !url) return;
+
+        try {
+          const response = await fetch(url, options);
+          const contentType = response.headers.get("Content-Type");
+
+          if (contentType === "application/wasm") {
+            // Special handling for WASM
+            const buffer = await response.arrayBuffer();
+            e.source.postMessage({ id, response: buffer, isWasm: true }, "*");
+          } else {
+            // Handle other responses as text
+            const text = await response.text();
+            e.source.postMessage({ id, response: text }, "*");
+          }
+        } catch (error) {
+          e.source.postMessage({ id, error: error.message }, "*");
+        }
+      })();
+
+      break;
     case 'sandbox-build-success':
       Log.debug('Sandbox build successful.');
       window.dispatchEvent(new CustomEvent('build-success'));

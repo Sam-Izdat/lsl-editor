@@ -22,6 +22,29 @@
 
 
   onMount(async () => {
+    console.warn('**************');
+    console.warn('**************');
+    console.warn('**************');
+    console.warn('**************');
+    console.warn('**************');
+    console.warn('**************');
+    // const originalFetch = window.fetch;
+    // window.fetch = async (url, options) => {
+    //     return new Promise((resolve, reject) => {
+    //         const id = Math.random().toString(36).substr(2); // Unique ID for response tracking
+    //         const listener = (event) => {
+    //             if (event.data.id === id) {
+    //                 window.removeEventListener('message', listener);
+    //                 event.data.error ? reject(event.data.error) : resolve(new Response(event.data.response));
+    //             }
+    //         };
+    //         window.addEventListener('message', listener);
+
+    //         // Send request to parent
+    //         window.parent.postMessage({ id, url, options }, '*');
+    //     });
+    // };
+
     const wasmScript = document.querySelector('script[src="./legitsl/LegitScriptWasm.js"]');
     if (!wasmScript) {
       new Error('Script not found.');
