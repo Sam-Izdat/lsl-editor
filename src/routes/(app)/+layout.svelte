@@ -39,7 +39,7 @@
   });
 
   if (browser && 'serviceWorker' in navigator) {
-    // navigator.serviceWorker.register('/service-worker.js', {
+    // navigator.serviceWorker.register('/sw.js', {
     //     scope: '.' 
     // }).then(function(registration) {
     //     // Registration was successful

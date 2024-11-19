@@ -10,8 +10,10 @@ export default defineConfig({
     purgeCss(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'script',
       workbox: {
         maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
+        globPatterns: ['**/*.{js,wasm,css,html,png,jpg}'],
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|wasm|css|png|jpg|jpeg|svg|woff2)$/,

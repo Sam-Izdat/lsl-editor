@@ -807,7 +807,6 @@
         scrolling="no" 
         sandbox="allow-scripts"  
         allow="fullscreen"
-        allowfullscreen="false" 
         title="canvasframe"> 
     </div>
 
