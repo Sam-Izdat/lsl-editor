@@ -8,9 +8,12 @@ export default defineConfig({
 	plugins: [
     sveltekit(), 
     SvelteKitPWA({
-      workbox: {
-        maximumFileSizeToCacheInBytes: 10 * 1024 ** 2
-      }
+      registerType: 'autoUpdate',
+      injectRegister: 'script',
+      workbox: { 
+        globPatterns: ['**/*.{js,wasm,css,ico,png,svg,webp,webmanifest}', '**/*.html'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
+      },
     }),
     purgeCss(),
   ],
