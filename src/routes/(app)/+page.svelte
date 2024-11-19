@@ -803,7 +803,7 @@
         id="canvasframe" 
         width="800" 
         height="800" 
-        src="./canvasframe?v={__APP_VERSION__}" 
+        src="./canvasframe.html" 
         scrolling="no" 
         sandbox="allow-scripts"  
         allow="fullscreen"

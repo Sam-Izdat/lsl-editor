@@ -27,27 +27,10 @@ export default defineConfig({
             handler: 'NetworkFirst',
           },
         ],
-        navigateFallbackDenylist: [/canvasframe/]
+        // navigateFallbackDenylist: [/canvasframe/]
       },
     }),
     purgeCss(),
-    {
-      name: 'no-split-iframe-group',
-      config: (config) => {
-        const iframeGroup = 'src/routes/(canvasframe)';
-        config.build.rollupOptions = {
-          ...config.build.rollupOptions,
-          output: {
-            manualChunks(id) {
-              if (id.includes(iframeGroup)) {
-                return 'iframe-group'; 
-              }
-            },
-            entryFileNames: '[name].js',
-          },
-        };
-      },
-    },
   ],
   define: {
     __APP_NAME__: JSON.stringify(pkg.name),
