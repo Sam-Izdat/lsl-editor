@@ -16,10 +16,10 @@ export default defineConfig({
         globPatterns: ['**/*.{js,wasm,css,html,png,jpg}'],
         runtimeCaching: [
           {
-            urlPattern: /\.(?:js|wasm|css|png|jpg|jpeg|svg|woff2)$/,
+            urlPattern: /^\/$/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'dynamic-resources',
+              cacheName: 'index-cache',
             },
           },
           {
