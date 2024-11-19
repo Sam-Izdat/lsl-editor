@@ -2,16 +2,7 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" 
-      content="
-        default-src * self blob: data: gap:;
-        style-src * self 'unsafe-inline' blob: data: gap:;
-        script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:;
-        object-src * 'self' blob: data: gap:;
-        img-src * self 'unsafe-inline' blob: data: gap:;
-        connect-src self * 'unsafe-inline' blob: data: gap:;
-        frame-src * self blob: data: gap:;
-        worker-src 'self' blob:;">
+    <meta http-equiv="Content-Security-Policy" content="worker-src 'self' blob:;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
