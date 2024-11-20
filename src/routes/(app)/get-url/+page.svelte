@@ -43,6 +43,9 @@
     }
   });
 </script>
+<svelte:head>
+  <title>Import URL</title>
+</svelte:head>
 {#if failed}
 <ScreenFailedFetch url={url} />
 {/if}

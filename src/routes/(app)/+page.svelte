@@ -18,6 +18,8 @@
   import * as harbor from '$lib/harbor';
   let parentIsReady = false;
 
+  let isPWA: boolean;
+
   import { 
     // Global state
     currentView,
@@ -134,8 +136,7 @@
     return true;
   };
 
-  const setURLFragment = (url) => {
-    const isPWA: boolean = window.matchMedia('(display-mode: standalone)').matches;
+  const setURLFragment = (url) => {    
     if (!isPWA) window.history.replaceState(null, '', `${base}${url}`);
   }
 
@@ -507,6 +508,7 @@
 
   // When browser stuff is available
   onMount(async () => {
+    isPWA = window.matchMedia('(display-mode: standalone)').matches;
     if (typeof ResizeObserver === 'undefined') {
       const { ResizeObserver } = await import('resize-observer-polyfill');
     }
@@ -661,7 +663,11 @@
 </script>
 
 <svelte:head>
-  <title>{dsCurrentSession.docName ? `${dsCurrentSession.docName} - ${cfg.APP_TITLE}` : cfg.APP_TITLE}</title>
+  <title>{
+    isPWA 
+      ? (dsCurrentSession.docName ? `${dsCurrentSession.docName}` : '')
+      : (dsCurrentSession.docName ? `${dsCurrentSession.docName} - ${cfg.APP_TITLE}` : cfg.APP_TITLE)
+    }</title>
 </svelte:head>
 <div class="card bg-surface-50-900-token rounded-none h-[100%] grid grid-cols-[auto_1fr] w-full">
   <AppRail class="w-8">
