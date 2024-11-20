@@ -16,7 +16,7 @@
   "protocol_handlers": [
     {
       "protocol": "",
-      "url": "./pth?%s"
+      "url": "./pth?q=%s"
     }
   ],
   "orientation": "",

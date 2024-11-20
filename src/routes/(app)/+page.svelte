@@ -135,7 +135,7 @@
   };
 
   const setSessionURL = () => {
-    replaceState('', '', `${base}?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
+    window.history.replaceState(null, '', `${base}?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
   };
 
   // Global status changing stuff
@@ -293,7 +293,7 @@
           $contextListen = false;
           resetContext();
           docHandler.newDoc();
-          replaceState('', '', `${base}/`);
+          window.history.replaceState(null, '', `${base}/`);
           await reqBuild(true);
         }
       });
@@ -302,7 +302,7 @@
       $contextListen = false;
       resetContext();
       docHandler.newDoc();
-      replaceState('', '', `${base}/`);
+      window.history.replaceState(null, '', `${base}/`);
       await reqBuild(true);
     }
   };
@@ -571,7 +571,7 @@
       }
 
       docHandler.newDoc(contentToLoad);
-      replaceState('', '', `${base}/`)
+      window.history.replaceState(null, '', `${base}/`)
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
@@ -606,7 +606,7 @@
       }
       const importShareableURL = sessionStorage.getItem('importShareableURL');
       if (importShareableURL !== null) {
-        replaceState('', '', importShareableURL);
+        window.history.replaceState(null, '', importShareableURL);
         sessionStorage.removeItem('importShareableURL');
       }
     }
