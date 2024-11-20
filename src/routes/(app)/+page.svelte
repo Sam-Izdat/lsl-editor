@@ -134,8 +134,13 @@
     return true;
   };
 
+  const setURLFragment = (url) => {
+    const isPWA: boolean = window.matchMedia('(display-mode: standalone)').matches;
+    if (!isPWA) window.history.replaceState(null, '', `${base}${url}`);
+  }
+
   const setSessionURL = () => {
-    window.history.replaceState(null, '', `${base}?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
+    setURLFragment(`?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
   };
 
   // Global status changing stuff
@@ -293,7 +298,7 @@
           $contextListen = false;
           resetContext();
           docHandler.newDoc();
-          window.history.replaceState(null, '', `${base}/`);
+          setURLFragment('/');
           await reqBuild(true);
         }
       });
@@ -302,7 +307,7 @@
       $contextListen = false;
       resetContext();
       docHandler.newDoc();
-      window.history.replaceState(null, '', `${base}/`);
+      setURLFragment('/');
       await reqBuild(true);
     }
   };
@@ -571,7 +576,7 @@
       }
 
       docHandler.newDoc(contentToLoad);
-      window.history.replaceState(null, '', `${base}/`)
+      setURLFragment('/');
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
