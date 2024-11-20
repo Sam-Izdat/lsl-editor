@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { guessRawURL } from '$lib';
+  import { cfg } from '$root/webui.config.js';
 
   let appURL = null;
   let outURL = null;
@@ -18,7 +19,8 @@
         outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
       } else if (appURL.hostname) {
         // assume actual URL
-        outURL = './get-url?q='+encodeURIComponent(guessRawURL(appURL.href)) ?? '';
+        let remoteURL = guessRawURL(appURL.href.replace('web+'+cfg.PWA_URL_PATTERN, 'https'));
+        outURL = './get-url?q='+encodeURIComponent(remoteURL) ?? '';
       }
       appURL.searchParams.forEach((value, key) => {
         outURL += `${outURL.includes('?') ? '&' : '?'}${key}=${value}`;
