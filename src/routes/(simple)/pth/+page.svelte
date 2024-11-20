@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   let appURL = null;
-  let params = {};
+  let outURL = null;
 
   onMount(() => {
     const url = new URL(window.location.href);  
@@ -10,35 +10,20 @@
 
     appURL = searchParams.has('q') ? new URL(decodeURIComponent(searchParams.get('q'))) : null;
 
-    let outURL = null;
-
-    if (appURL.hostname == 'url' && appURL.pathname) {
-      outURL = './get-url?q='+appURL.pathname.split('/')[1] ?? '';
-    } else if (appURL.hostname == 'gist' && appURL.pathname) {
-      outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
-    } 
-
-    if (outURL) {
+    if (appURL) {
+      if (appURL.hostname == 'url' && appURL.pathname) {
+        outURL = './get-url?q='+appURL.pathname.split('/')[1] ?? '';
+      } else if (appURL.hostname == 'gist' && appURL.pathname) {
+        outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
+      }
+      appURL.searchParams.forEach((value, key) => {
+        outURL += `${outURL.includes('?') ? '&' : '?'}${key}=${value}`;
+      });
       window.location=outURL;
     }
-
-    if (!searchParams.has('q')) {
-      searchParams.forEach((value, key) => {
-        params[key] = value;
-      }); 
-    }
-
   });
 </script>
 
-{#if appURL === null}
-  <h3>Missing query</h3>
-{/if}
-{#if Object.keys(params).length > 0}
-  <h3>Unrecognized parameters:</h3>
-  <ul>
-    {#each Object.entries(params) as [key, value]}
-      <li>{key}: {value}</li>
-    {/each}
-  </ul>
+{#if outURL === null}
+  <h3>Couldn't make sense of URL...</h3>
 {/if}

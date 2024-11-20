@@ -104,7 +104,7 @@
     return url;
   };
 
-  const copyToClipboard = () => {
+  const copyURLToClipboard = () => {
     if (shareableURL) {
       navigator.clipboard.writeText(shareableURL).then(() => {
         Log.toastSuccess('copied to clipboard');
@@ -114,6 +114,17 @@
       });
     }
   };
+
+  const copyPWAURLToClipboard = () => {
+    if (shareableURL) {
+      navigator.clipboard.writeText(shareablePWAURL).then(() => {
+        Log.toastSuccess('copied to clipboard');
+      }).catch(err => {
+        Log.toastError('could not copy to clipboard');
+        Log.error(err);
+      });
+    }
+  };  
 
   const handlePaste = (event: ClipboardEvent) => {
     event.preventDefault();
@@ -125,6 +136,7 @@
   let extResourceValue: string = '';
   let selectedOption: string = 'raw';
   let shareableURL: string = '';
+  let shareablePWAURL: string = '';
 
 
   const defaultView       = 0;
@@ -134,6 +146,7 @@
   $: makeURL = () => {
     if (extResourceValue.trim() === '') {
       shareableURL = ''; 
+      shareablePWAURL = '';
       return; 
     }
     let rawURL = cfg.GUESS_RAW_URL ? guessURL(extResourceValue) : extResourceValue;
@@ -142,15 +155,26 @@
       shareableURL = __BUILD_TYPE__ == 'static'
         ? `${cfg.APP_HOST_PATH}get-url?q=${encodedURI}`
         : `${cfg.APP_HOST_PATH}url/${encodedURI}`;
+      shareablePWAURL = `web+${cfg.PWA_URL_PATTERN}://url/${encodedURI}`;
     } else if (selectedOption === 'gist') {
       shareableURL = __BUILD_TYPE__ == 'static'
         ? `${cfg.APP_HOST_PATH}get-gist?q=${encodedURI}`
         : `${cfg.APP_HOST_PATH}gist/${encodedURI}`;
+      shareablePWAURL = `web+${cfg.PWA_URL_PATTERN}://gist/${encodedURI}`;
     }
 
-    if (urlView != defaultView)           shareableURL += `${shareableURL.includes('?') ? '&' : '?'}view=${urlView}`;
-    if (urlAutoBuild != defaultAutoBuild) shareableURL += `${shareableURL.includes('?') ? '&' : '?'}autobuild=${urlAutoBuild}`;
-    if (urlReadOnly != defaultReadOnly)   shareableURL += `${shareableURL.includes('?') ? '&' : '?'}readonly=${urlReadOnly}`;
+    if (urlView != defaultView) {
+      shareableURL += `${shareableURL.includes('?') ? '&' : '?'}view=${urlView}`;
+      shareablePWAURL += `${shareablePWAURL.includes('?') ? '&' : '?'}view=${urlView}`;
+    }
+    if (urlAutoBuild != defaultAutoBuild) {
+      shareableURL += `${shareableURL.includes('?') ? '&' : '?'}autobuild=${urlAutoBuild}`;
+      shareablePWAURL += `${shareablePWAURL.includes('?') ? '&' : '?'}autobuild=${urlAutoBuild}`;
+    }
+    if (urlReadOnly != defaultReadOnly) {
+      shareableURL += `${shareableURL.includes('?') ? '&' : '?'}readonly=${urlReadOnly}`;
+      shareablePWAURL += `${shareablePWAURL.includes('?') ? '&' : '?'}readonly=${urlReadOnly}`;
+    }
   };
 
   $: iframeWidth            = null;
@@ -259,10 +283,26 @@
                         {shareableURL}
                       </div>
                       <div class="flex space-x-2">
-                        <button on:click={copyToClipboard} title="Copy to Clipboard">
+                        <button on:click={copyURLToClipboard} title="Copy to Clipboard">
                           <Icon src="{hero.ClipboardDocumentCheck}" size="20" solid/>
                         </button>
                         <button on:click={() => window.open(shareableURL, '_blank')} title="Go">
+                          <Icon src="{hero.ArrowRightCircle}" size="20" solid/>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card variant-soft-secondary">
+                    <div class="flex items-center justify-between p-2">
+                      <div class="flex-grow truncate overflow-hidden text-ellipsis whitespace-nowrap text-left max-w-[calc(100%-64px)]">
+                        {shareablePWAURL}
+                      </div>
+                      <div class="flex space-x-2">
+                        <button on:click={copyPWAURLToClipboard} title="Copy to Clipboard">
+                          <Icon src="{hero.ClipboardDocumentCheck}" size="20" solid/>
+                        </button>
+                        <button on:click={() => window.open(shareablePWAURL, '_blank')} title="Go">
                           <Icon src="{hero.ArrowRightCircle}" size="20" solid/>
                         </button>
                       </div>
