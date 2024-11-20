@@ -38,9 +38,9 @@
 
         document.body.appendChild(script);
 
-        console.log('Module injected and executed:', url);
+        console.log('[canvas-frame] Module injected and executed:', url);
       } catch (error) {
-        console.error('Failed to load module via script tag:', error);
+        console.error('[canvas-frame] Failed to load module via script tag:', error);
       }
     };
 
@@ -51,12 +51,12 @@
         script.src = url;
 
         script.onload = () => {
-          console.log('Module loaded successfully:', url);
+          console.log('[canvas-frame] Module loaded successfully:', url);
           resolve();
         };
 
         script.onerror = (error) => {
-          console.error('Failed to load module:', error);
+          console.error('[canvas-frame] Failed to load module:', error);
           reject(error);
         };
 
@@ -81,10 +81,10 @@
     (async () => {
       let lwcURL = './legitsl/LegitScriptWasm.js';
       if (!navigator.onLine) {   
-        console.log("Loading module by post");
+        console.log("[canvas-frame] Loading module by post:", lwcURL);
         await loadESModuleByPost(lwcURL);
       } else {
-        console.log("Loading module normally");
+        console.log("[canvas-frame] Loading module normally:", lwcURL);
         await loadModuleByScriptTag(lwcURL);
       }
 
@@ -267,7 +267,9 @@
             window.parent.postMessage({ tx: 'sandbox-resize-confirm'}, e.origin);
             break;
           default:
-            console.warn('Unknown command');
+            void(0);
+            // Probably unnecessary:
+            // console.warn('[canvas-frame] Unknown command');
         }
       };
 

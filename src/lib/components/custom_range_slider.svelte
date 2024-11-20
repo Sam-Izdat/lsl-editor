@@ -163,7 +163,7 @@
           on:focus={selectValue}
         />
             {/if}
-              <span> / {max}</span>
+              <span> (min: {min}, max: {max})</span>
           </div>
         </div>
       {/if}
