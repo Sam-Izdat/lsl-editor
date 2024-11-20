@@ -31,7 +31,7 @@ const dynamicManifest = {
 dynamicManifest['file_handlers'][0]['action'] = cfg.PWA_FILE_ACTION;
 dynamicManifest['file_handlers'][0]['accept'] = {};
 dynamicManifest['file_handlers'][0]['accept'][cfg.PWA_FILE_MIME_TYPE] = [cfg.PWA_FILE_EXT];
-dynamicManifest['protocol_handlers'][0]['protocol'] = cfg.PWA_URL_PATTERN;
+dynamicManifest['protocol_handlers'][0]['protocol'] = 'web+'+cfg.PWA_URL_PATTERN;
 dynamicManifest['handle_links'] = cfg.PWA_HANDLE_LINKS;
 
 const outputPath = path.join(__dirname, '../static/manifest.json');
