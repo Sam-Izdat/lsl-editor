@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { guessRawURL } from '$lib';
 
   let appURL = null;
   let outURL = null;
@@ -17,7 +18,7 @@
         outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
       } else if (appURL.hostname) {
         // assume actual URL
-        outURL = './get-url?q='+encodeURIComponent(appURL.href) ?? '';
+        outURL = './get-url?q='+encodeURIComponent(guessRawURL(appURL.href)) ?? '';
       }
       appURL.searchParams.forEach((value, key) => {
         outURL += `${outURL.includes('?') ? '&' : '?'}${key}=${value}`;

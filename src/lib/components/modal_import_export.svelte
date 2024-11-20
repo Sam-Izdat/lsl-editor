@@ -15,7 +15,7 @@
 
   import { getModalStore } from '@skeletonlabs/skeleton';
 
-  import { Log } from '$lib';
+  import { Log, guessRawURL } from '$lib';
   import { cfg } from '$root/webui.config.js';
 
   import * as ds from '$lib/stores/doc_session';
@@ -69,40 +69,6 @@
     }
   };
   
-  const guessURL = (url: string): string => {
-    // Define a list of URL transformation patterns
-    const patterns = [
-      {
-        // Pattern to match GitHub blob URL structure
-        regex: /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/,
-        transform: (match: RegExpMatchArray) =>
-          `https://raw.githubusercontent.com/${match[1]}/${match[2]}/${match[3]}/${match[4]}`
-      },
-      {
-        regex: /^https:\/\/gist\.github\.com\/([^/]+)\/(\w+)$/,
-        transform: (match: RegExpMatchArray) =>
-          `https://gist.githubusercontent.com/${match[1]}/${match[2]}/raw`
-      },
-      {
-        // Pastebin URL to raw content, only if not already raw
-        regex: /^https:\/\/pastebin\.com\/(?!raw\/)(\w+)$/,
-        transform: (match: RegExpMatchArray) =>
-          `https://pastebin.com/raw/${match[1]}`
-      }
-      // Add more patterns here if needed
-    ];
-
-    // Apply each pattern, return transformed URL if matched
-    for (const { regex, transform } of patterns) {
-      const match = url.match(regex);
-      if (match) {
-        return transform(match);
-      }
-    }
-
-    // Return original string if no patterns match
-    return url;
-  };
 
   const copyURLToClipboard = () => {
     if (shareableURL) {
@@ -149,7 +115,7 @@
       shareablePWAURL = '';
       return; 
     }
-    let rawURL = cfg.GUESS_RAW_URL ? guessURL(extResourceValue) : extResourceValue;
+    let rawURL = cfg.GUESS_RAW_URL ? guessRawURL(extResourceValue) : extResourceValue;
     const encodedURI = encodeURIComponent(rawURL.trim());
     if (selectedOption === 'raw') {      
       shareableURL = __BUILD_TYPE__ == 'static'
