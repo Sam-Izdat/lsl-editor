@@ -16,35 +16,29 @@
             if (event.data.error) {
               reject(event.data.error);
             } else if (event.data.isWasm) {
-              // Handle WASM ArrayBuffer response
               resolve(new Response(event.data.response, { headers: { "Content-Type": "application/wasm" } }));
             } else {
-              // Handle regular text response
               resolve(new Response(event.data.response));
             }
           }
         };
         window.addEventListener("message", listener);
-
-        // Send request to parent
-        setTimeout(() => { window.parent.postMessage({ tx: "sandbox-fetch", id, url }, "*"); }, 1000);
+        window.parent.postMessage({ tx: "sandbox-fetch", id, url }, "*");
       });
     };
 
     const loadESModuleByPost = async (url) => {
       try {
-        const response = await fetchByPost(url); // Get the Response object
-        const moduleCode = await response.text(); // Extract the JS code as a string
+        const response = await fetchByPost(url); 
+        const moduleCode = await response.text();
 
-        // Create a <script> tag with type="module"
         const script = document.createElement('script');
         script.type = 'module';
         script.textContent = moduleCode;
 
-        // Append the script to the document
         document.body.appendChild(script);
 
-        console.log('Module injected and executed.');
+        console.log('Module injected and executed:', url);
       } catch (error) {
         console.error('Failed to load module via script tag:', error);
       }
@@ -57,7 +51,7 @@
         script.src = url;
 
         script.onload = () => {
-          console.log('Module loaded successfully.');
+          console.log('Module loaded successfully:', url);
           resolve();
         };
 
@@ -68,9 +62,9 @@
 
         document.body.appendChild(script);
       });
-    }
+    };
 
-    window.fetch = fetchByPost;
+    if (!navigator.onLine) window.fetch = fetchByPost;
   </script>
   </head>
   <body>
@@ -87,9 +81,10 @@
     (async () => {
       let lwcURL = './legitsl/LegitScriptWasm.js';
       if (!navigator.onLine) {   
-        window.fetch = fetchByPost;
+        console.log("Loading module by post");
         await loadESModuleByPost(lwcURL);
       } else {
+        console.log("Loading module normally");
         await loadModuleByScriptTag(lwcURL);
       }
 
@@ -250,6 +245,7 @@
             break;
           case 'harbor-ready-ack':
             clearInterval(broadcastReady);
+            cfg.TX_CONTEXT_FREQ = parseInt(e.data.txContextFreq);
             break;
           case 'harbor-status':
             window.parent.postMessage({ tx: 'sandbox-status-report', 

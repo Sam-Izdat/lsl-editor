@@ -1,4 +1,5 @@
 import { Log } from '$lib';
+import { cfg } from '$root/webui.config.js';
 
 const handleMessage = (e: Event) => rxSandbox(e);
 
@@ -137,7 +138,7 @@ export const txReset = (sandbox: Window) => {
 };
 
 export const txReadyAck = (sandbox: Window) => {
-  sandbox.postMessage({ tx: 'harbor-ready-ack' }, "*");
+  sandbox.postMessage({ tx: 'harbor-ready-ack', txContextFreq: cfg.TX_CONTEXT_FREQ }, "*");
 };
 
 export const txStatus = (sandbox: Window) => {

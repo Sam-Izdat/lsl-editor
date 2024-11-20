@@ -3,7 +3,7 @@
   import type { ComponentType } from 'svelte';
   import { writable } from 'svelte/store';
   import { propertyStore } from 'svelte-writable-derived'; 
-  import { beforeNavigate } from "$app/navigation";
+  import { beforeNavigate, replaceState } from "$app/navigation";
   import { browser } from '$app/environment';
   import { base } from '$app/paths';  
   import Device from 'svelte-device-info';
@@ -16,6 +16,7 @@
   import * as km from '$lib/keymap';
 
   import * as harbor from '$lib/harbor';
+  let parentIsReady = false;
 
   import { 
     // Global state
@@ -73,7 +74,8 @@
   }  from '$lib/components';
   import * as panes from '$lib/panes';
 
-  // Modals, Drawers
+  // Modals, Drawers, Throbber  
+  import { ProgressRadial } from '@skeletonlabs/skeleton';
   import { getModalStore, getDrawerStore } from '@skeletonlabs/skeleton';
   const modalStore = getModalStore();
   const drawerStore = getDrawerStore();
@@ -133,7 +135,7 @@
   };
 
   const setSessionURL = () => {
-    window.history.replaceState(null, '', `${base}?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
+    replaceState('', '', `${base}?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
   };
 
   // Global status changing stuff
@@ -291,7 +293,7 @@
           $contextListen = false;
           resetContext();
           docHandler.newDoc();
-          window.history.replaceState(null, '', `${base}/`);
+          replaceState('', '', `${base}/`);
           await reqBuild(true);
         }
       });
@@ -300,7 +302,7 @@
       $contextListen = false;
       resetContext();
       docHandler.newDoc();
-      window.history.replaceState(null, '', `${base}/`);
+      replaceState('', '', `${base}/`);
       await reqBuild(true);
     }
   };
@@ -527,6 +529,7 @@
       window.addEventListener('canvas-ready', canvasReady);
       window.addEventListener('build-success', buildSuccess);
       window.addEventListener('build-error', buildError);
+      parentIsReady = true;
 
       // Set up handlers
       docHandler    = new DocHandler(dsCurrentSession, monacoEditor);
@@ -568,7 +571,7 @@
       }
 
       docHandler.newDoc(contentToLoad);
-      window.history.replaceState(null, '', `${base}/`)
+      replaceState('', '', `${base}/`)
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
@@ -603,7 +606,7 @@
       }
       const importShareableURL = sessionStorage.getItem('importShareableURL');
       if (importShareableURL !== null) {
-        window.history.replaceState(null, '', importShareableURL);
+        replaceState('', '', importShareableURL);
         sessionStorage.removeItem('importShareableURL');
       }
     }
@@ -799,15 +802,19 @@
     </div>
 
     <div id="ct2">
+      <div class="h-full w-full flex justify-center items-center {$canvasIsReady ? 'hidden' : ''}">
+        <ProgressRadial value={undefined} />
+      </div>
+      {#if parentIsReady}
       <iframe 
         id="canvasframe" 
         width="800" 
         height="800" 
         src="./canvasframe.html" 
         scrolling="no" 
-        sandbox="allow-scripts"  
-        allow="fullscreen"
-        title="canvasframe"> 
+        classs="{$canvasIsReady ? '' : 'hidden'}"
+        title="canvasframe" /> 
+      {/if}
     </div>
 
     <div id="ct3" class="divide-y divide-surface-400/10 !overflow-y-auto">
