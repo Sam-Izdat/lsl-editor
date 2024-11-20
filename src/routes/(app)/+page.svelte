@@ -140,7 +140,7 @@
   }
 
   const setSessionURL = () => {
-    setURLFragment(`?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
+    setURLFragment(`/?private=${encodeUUIDToURI(get(ds.documentSession).docID)}`);
   };
 
   // Global status changing stuff
@@ -660,6 +660,9 @@
   import * as ico from '$lib/components/icons';
 </script>
 
+<svelte:head>
+  <title>{dsCurrentSession.docName ? `${dsCurrentSession.docName} - ${cfg.APP_TITLE}` : cfg.APP_TITLE}</title>
+</svelte:head>
 <div class="card bg-surface-50-900-token rounded-none h-[100%] grid grid-cols-[auto_1fr] w-full">
   <AppRail class="w-8">
     <AppRailTile 
