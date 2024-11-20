@@ -12,7 +12,7 @@ const config = {
   	prerender: {
 			crawl: true,
 			entries: process.env.BUILD_TYPE === 'static' 
-				? ['/', '/canvasframe-error', '/open-file', '/get-gist', '/get-url', '/gist/0', '/url/0'] // static routes here
+				? ['/', '/pth', '/canvasframe-error', '/open-file', '/get-gist', '/get-url', '/gist/0', '/url/0'] // static routes here
 				: [] // leave empty dynamic routes
 		},
     paths: {

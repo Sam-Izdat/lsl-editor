@@ -27,7 +27,7 @@ export default defineConfig({
             handler: 'NetworkFirst',
           },
         ],
-        // navigateFallbackDenylist: [/canvasframe/]
+        // navigateFallbackDenylist: [/pth/]
       },
     }),
     purgeCss(),

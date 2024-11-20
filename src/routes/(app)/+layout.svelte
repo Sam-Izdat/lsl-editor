@@ -39,65 +39,7 @@
   });
 
   if (browser && 'serviceWorker' in navigator) {
-    // navigator.serviceWorker.register('/sw.js', {
-    //     scope: '.' 
-    // }).then(function(registration) {
-    //     // Registration was successful
-    //     console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    // }, function(err) {
-    //     // registration failed :(
-    //     console.log('ServiceWorker registration failed: ', err);
-    // });
-    // self.addEventListener('fetch', (event) => {
-    //   console.warn('FETCH REQUEST');
-    //   event.respondWith(
-    //     (async () => {
-
-    //       const request = event.request;
-    //       const referer = request.headers.get('Referer'); // Originating page
-    //       const origin = request.headers.get('Origin');   // Origin of the requester
-
-    //       let response;
-
-    //       // Serve from cache if available
-    //       response = await caches.match(request);
-
-    //       // Fetch from network if not in cache
-    //       if (!response) {
-    //         response = await fetch(request);
-    //       }
-
-    //       // Modify the response to include appropriate CSP headers
-    //       if (response) {
-    //         const newHeaders = new Headers(response.headers);
-    //         // Apply sandboxed CSP if the request comes from the iframe
-    //         if (referer && referer.includes('/canvasframe')) {
-    //           console.warn('CANVASFRAME REQUEST');
-    //           newHeaders.set(
-    //             'Content-Security-Policy',
-    //             "default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self'; worker-src 'none';"
-    //           );
-    //         } else {
-    //           // Apply full-permission CSP for main app requests
-    //           newHeaders.set(
-    //             'Content-Security-Policy',
-    //             "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:; worker-src 'self' blob:;"
-    //           );
-    //         }
-
-    //         return new Response(response.body, {
-    //           status: response.status,
-    //           statusText: response.statusText,
-    //           headers: newHeaders,
-    //         });
-    //       }
-
-    //       // Fallback in case of no response (e.g., offline and not cached)
-    //       return new Response('Offline', { status: 503 });
-    //     })()
-    //   );
-    // });
-
+    // ---
   }
 </script>
 
@@ -117,3 +59,6 @@
 <AppShell slotSidebarLeft="bg-surface-500/5 w-56 h-[100%] p-4">
   <slot />
 </AppShell>
+<style>
+  @import '$lib/styles/main.css';
+</style>

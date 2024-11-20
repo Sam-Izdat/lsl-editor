@@ -30,7 +30,7 @@ export const cfg = {
   PWA_FILE_MIME_TYPE: 'application/x-legitsl',
   PWA_FILE_ACTION:    APP_HOST_PATH + 'open-file',
   PWA_URL_PATTERN:    'legitsl',      // See: https://developer.chrome.com/docs/web-platform/best-practices/url-protocol-handler
-  PWA_HANDLE_LINKS:   'preferred',    // See: https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
+  PWA_HANDLE_LINKS:   'auto',         // See: https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
   PWA_THEME_COLOR:    '#3b4762',      // theme color for app status/title bars etc
   PWA_BG_COLOR:       '#1E1E1E',      // splash screen background
   PWA_ORIENTATION:    'any',          // setting 'landscape' will force PWA into landscape mode at all times

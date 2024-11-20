@@ -851,6 +851,5 @@
   </div>
 </div>
 <style>
-  @import '$lib/styles/main.css';
   @import '$lib/styles/panes.css';
 </style>
