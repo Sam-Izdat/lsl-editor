@@ -18,7 +18,7 @@
   import * as harbor from '$lib/harbor';
   let parentIsReady = false;
 
-  let isPWA: boolean;
+  let isPWA: boolean = false;
 
   import { 
     // Global state
@@ -506,9 +506,16 @@
     })
   };
 
+  const handleMediaChange = (e) => {
+    isPWA = e.matches;
+  };
+
   // When browser stuff is available
   onMount(async () => {
-    isPWA = window.matchMedia('(display-mode: standalone)').matches;
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    isPWA = mediaQuery.matches;
+    mediaQuery.addEventListener('change', handleMediaChange);
+
     if (typeof ResizeObserver === 'undefined') {
       const { ResizeObserver } = await import('resize-observer-polyfill');
     }
