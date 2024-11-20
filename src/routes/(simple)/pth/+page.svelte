@@ -14,7 +14,7 @@
 
     if (appURL) {
       if (appURL.hostname == 'url' && appURL.pathname) {
-        outURL = './get-url?q='+(appURL.pathname.replace(/^\/+/, '')) ?? '';
+        outURL = './get-url?q='+encodeURIComponent(appURL.pathname.replace(/^\/+/, '')) ?? '';
       } else if (appURL.hostname == 'gist' && appURL.pathname) {
         outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
       } else if (appURL.hostname) {
