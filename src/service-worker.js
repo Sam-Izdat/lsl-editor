@@ -1,9 +1,19 @@
 import { build, files, version } from '$service-worker';
+import { base } from '$app/paths';  
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
-const ROUTES = ['./', './pth', './canvasframe-error', './open-file', './get-gist', './get-url', './gist/0', './url/0'];
+const ROUTES = [
+  `${base}/`, 
+  `${base}/pth`, 
+  `${base}/canvasframe-error`, 
+  `${base}/open-file`, 
+  `${base}/get-gist`, 
+  `${base}/get-url`, 
+  `${base}/gist/0`, 
+  `${base}/url/0`
+  ];
 
 const ASSETS = [
   ...build, // the app itself
