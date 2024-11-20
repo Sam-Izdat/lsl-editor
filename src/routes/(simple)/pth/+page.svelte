@@ -15,6 +15,9 @@
         outURL = './get-url?q='+appURL.pathname.split('/')[1] ?? '';
       } else if (appURL.hostname == 'gist' && appURL.pathname) {
         outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
+      } else if (appURL.hostname) {
+        // assume actual URL
+        outURL = './get-url?q='+encodeURIComponent(appURL.href) ?? '';
       }
       appURL.searchParams.forEach((value, key) => {
         outURL += `${outURL.includes('?') ? '&' : '?'}${key}=${value}`;
