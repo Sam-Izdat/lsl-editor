@@ -1,18 +1,17 @@
-import { build, files, version } from '$service-worker';
-import { PUBLIC_BASE_URL } from '$env/static/public';  
+import { build, files, version, base } from '$service-worker';
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
 const ROUTES = [
-  `${PUBLIC_BASE_URL}/`, 
-  `${PUBLIC_BASE_URL}/pth`, 
-  `${PUBLIC_BASE_URL}/canvasframe-error`, 
-  `${PUBLIC_BASE_URL}/open-file`, 
-  `${PUBLIC_BASE_URL}/get-gist`, 
-  `${PUBLIC_BASE_URL}/get-url`, 
-  `${PUBLIC_BASE_URL}/gist/0`, 
-  `${PUBLIC_BASE_URL}/url/0`
+  `${base}/`, 
+  `${base}/pth`, 
+  `${base}/canvasframe-error`, 
+  `${base}/open-file`, 
+  `${base}/get-gist`, 
+  `${base}/get-url`, 
+  `${base}/gist/0`, 
+  `${base}/url/0`
   ];
 
 const ASSETS = [
