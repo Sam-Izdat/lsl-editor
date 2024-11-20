@@ -12,11 +12,7 @@
       }
     }
   ],
-  "url_handlers": [
-    {
-      "url_pattern": ""
-    }
-  ],
+  "handle_links": "",
   "orientation": "",
   "background_color": "",
   "theme_color": "",
