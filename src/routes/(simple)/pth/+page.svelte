@@ -17,7 +17,7 @@
   let outHref;
 
   let realURL = false;
-
+  
   onMount(() => {
     winURL = new URL(window.location.href);  
     winParams = new URLSearchParams(winURL.search); 
@@ -48,8 +48,9 @@
         appURL.searchParams.forEach((value, key) => {
           outHref += `${outHref.includes('?') ? '&' : '?'}${key}=${value}`;
         });
-        window.location=outHref; 
       }
+
+      if (outHref) window.location=outHref; 
     } else {
       outHref = null;
     }
