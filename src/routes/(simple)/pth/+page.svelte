@@ -13,8 +13,10 @@
   // decoded app-protocol URL
   let appURL;
 
-  // redirect href
+  // redirect href (starts undefined, goes null on failure)
   let outHref;
+
+  let realURL = false;
 
   onMount(() => {
     winURL = new URL(window.location.href);  
@@ -33,17 +35,27 @@
         outHref = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
       } else if (appURL.hostname) {
         // assume actual URL
+        realURL = true;
         let remoteURL = guessRawURL(appHref.replace('web+'+cfg.PWA_URL_PATTERN, 'https'));
         outHref = './get-url?q='+encodeURIComponent(remoteURL) ?? '';
+      } else {
+        outHref = null;
       }
-      appURL.searchParams.forEach((value, key) => {
-        outHref += `${outHref.includes('?') ? '&' : '?'}${key}=${value}`;
-      });
-      window.location=outHref;
+
+      // collect params; skip real to URLs avoid param collisions...
+      // non-encoded URLs will be loaded with app defaults
+      if (outHref && !realURL) {
+        appURL.searchParams.forEach((value, key) => {
+          outHref += `${outHref.includes('?') ? '&' : '?'}${key}=${value}`;
+        });
+        window.location=outHref; 
+      }
+    } else {
+      outHref = null;
     }
   });
 </script>
 
 {#if outHref === null}
-  <h3>Couldn't make sense of URL...</h3>
+<h3>could not make sense of URL...</h3>
 {/if}

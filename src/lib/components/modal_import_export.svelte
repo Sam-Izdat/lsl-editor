@@ -69,6 +69,12 @@
     }
   };
   
+  const registerProtocolHandler = () => {
+    navigator.registerProtocolHandler(
+      `web+${cfg.PWA_URL_PATTERN}`,
+      `${cfg.APP_HOST_PATH}/pth?q=%s`,
+    );
+  };
 
   const copyURLToClipboard = () => {
     if (shareableURL) {
@@ -233,6 +239,16 @@
                     The import link generated will be shareable and will stay up to date if the file changes on the external host. 
                     You can also embed this editor with its external resource in an iframe - e.g. to post on a blog.
                   </p>
+                  <p class="text-sm">
+                    If you install the PWA with a capable browsser, you can also change the protcol of any raw <code>https://</code> URL to 
+                    <code>web+{cfg.PWA_URL_PATTERN}://</code> in order to import the script into the editor. If you cannot or do 
+                    not wish to install the PWA, you can register a protocol handler to do the same.
+                  </p>
+                  <div class="flex justify-center">
+                    <button class="btn {parent.buttonNeutral}" on:click={registerProtocolHandler}>
+                      Register Protocol Handler
+                    </button>
+                  </div>
                 </svelte:fragment>
               </AccordionItem>
               <AccordionItem open>

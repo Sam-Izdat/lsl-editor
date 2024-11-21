@@ -51,6 +51,9 @@
     }
   });
 </script>
+<svelte:head>
+  <title>Import Gist</title>
+</svelte:head>
 {#if failed}
 <ScreenFailedFetch url={url} />
 {/if}

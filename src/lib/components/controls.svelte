@@ -30,11 +30,31 @@
 <div class="context-container">
 {#each $contextVars as item, i (item)}
   {#if item.type == 'TextRequest'}
-    {#if item.text.endsWith('#heading')}
-    <div class="mt-2">
+    {#if item.text.startsWith('# ')}
+    <div class="my-1">
       <hr/>
-      <h4 class="h4 text-center">{item.text.replace('#heading', '')}</h4>
+      <h4 class="h4 text-center">{item.text.replace(/^# /, '')}</h4>
     </div>
+    {:else if item.text.startsWith('> ')}
+    <div class="my-1">
+      <blockquote class="border-l-4 border-surface-500/30 pl-4 italic">
+        {item.text.replace(/^> /, '')}
+      </blockquote>
+    </div>
+    {:else if item.text.startsWith('!!!')}
+    <div class="my-1">
+      <span class="badge variant-ghost-warning">
+        {item.text.replace(/^!!!/, '')}
+      </span>
+    </div>
+    {:else if item.text.startsWith('!badge:')}
+    <div class="my-1">
+      <span class="badge variant-ghost-surface">
+        {item.text.replace(/^!badge:/, '')}
+      </span>
+    </div>
+    {:else if item.text === '---'}
+    <hr class="my-1" />
     {:else}
     <div>
       <span class="flex-auto">{item.text}</span>
