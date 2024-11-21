@@ -72,7 +72,8 @@
   const registerProtocolHandler = () => {
     navigator.registerProtocolHandler(
       `web+${cfg.PWA_URL_PATTERN}`,
-      `${cfg.APP_HOST_PATH}/pth?q=%s`,
+      `${cfg.APP_HOST_PATH}pth?q=%s`,
+      `${cfg.APP_TITLE}`
     );
   };
 
