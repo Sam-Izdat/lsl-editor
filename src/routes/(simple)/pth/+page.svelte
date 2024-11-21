@@ -3,35 +3,47 @@
   import { guessRawURL } from '$lib';
   import { cfg } from '$root/webui.config.js';
 
-  let appURL = null;
-  let outURL = null;
+  // current window URL
+  let winURL;
+  // current window URL parameters
+  let winParams;
+
+  // decoded app-protocol href
+  let appHref;
+  // decoded app-protocol URL
+  let appURL;
+
+  // redirect href
+  let outHref;
 
   onMount(() => {
-    const url = new URL(window.location.href);  
-    const searchParams = new URLSearchParams(url.search); 
+    winURL = new URL(window.location.href);  
+    winParams = new URLSearchParams(winURL.search); 
 
-    const appHref = searchParams.get('q');
-    appURL = searchParams.has('q') ? new URL(appHref) : null;
+    appHref = winParams.get('q');
+    appURL = appHref ? new URL(appHref) : null;
 
     if (appURL) {
       if (appURL.hostname == 'url' && appURL.pathname) {
-        let remoteURL = new URL(appHref).pathname.replace(/^\/+/, '');
-        outURL = './get-url?q='+remoteURL ?? '';
+        let remoteURL = appURL.pathname.replace(/^\/+/, '');
+        // match web+app://url/[encoded-url]
+        outHref = './get-url?q='+remoteURL ?? '';
       } else if (appURL.hostname == 'gist' && appURL.pathname) {
-        outURL = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
+        // match web+app://gist/[gist-id]
+        outHref = './get-gist?q='+appURL.pathname.split('/')[1] ?? '';
       } else if (appURL.hostname) {
         // assume actual URL
         let remoteURL = guessRawURL(appHref.replace('web+'+cfg.PWA_URL_PATTERN, 'https'));
-        outURL = './get-url?q='+encodeURIComponent(remoteURL) ?? '';
+        outHref = './get-url?q='+encodeURIComponent(remoteURL) ?? '';
       }
       appURL.searchParams.forEach((value, key) => {
-        outURL += `${outURL.includes('?') ? '&' : '?'}${key}=${value}`;
+        outHref += `${outHref.includes('?') ? '&' : '?'}${key}=${value}`;
       });
-      window.location=outURL;
+      window.location=outHref;
     }
   });
 </script>
 
-{#if outURL === null}
+{#if outHref === null}
   <h3>Couldn't make sense of URL...</h3>
 {/if}
