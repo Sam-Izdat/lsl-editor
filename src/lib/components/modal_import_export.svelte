@@ -68,7 +68,7 @@
       Log.warning('No file selected.');
     }
   };
-  
+
   const registerProtocolHandler = () => {
     navigator.registerProtocolHandler(
       `web+${cfg.PWA_URL_PATTERN}`,
@@ -241,9 +241,10 @@
                     You can also embed this editor with its external resource in an iframe - e.g. to post on a blog.
                   </p>
                   <p class="text-sm">
-                    If you install the PWA with a capable browsser, you can also change the protcol of any raw <code>https://</code> URL to 
-                    <code>web+{cfg.PWA_URL_PATTERN}://</code> in order to import the script into the editor. If you cannot or do 
-                    not wish to install the PWA, you can register a protocol handler to do the same.
+                    If you install the PWA with a capable browser, you can also change the protcol of any raw <code class="code">https://</code> URL to 
+                    <code class="code">web+{cfg.PWA_URL_PATTERN}://</code> in order to import the script into the editor. If you cannot or do 
+                    not wish to install the PWA, you can register a protocol handler below to do the same. If using Firefox, you may need to go to 
+                    <code class="code">about:preferences#general</code> afterward and select the right handler.
                   </p>
                   <div class="flex justify-center">
                     <button class="btn {parent.buttonNeutral}" on:click={registerProtocolHandler}>
