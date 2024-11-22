@@ -176,7 +176,7 @@
         throw(e);
       }
 
-      inplace = !!parseInt(winParams.get('inplace')) ?? inplace;
+      inplace = !!parseInt(winParams.get('inplace') ?? 1);
       editorParamList.forEach(param => {
         let val = winParams.get(param);
         if (val) editorParamStr += (editorURL.includes('?') ? '&' : '?') + `${param}=${val}`;
