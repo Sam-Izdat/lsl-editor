@@ -167,6 +167,11 @@
     pulseEditorBackground(flashCol, cfg.BUILD_FLASH_DUR);
   };
 
+  const toggleAutoBuild = () => { 
+    isAutoBuild.set(!$isAutoBuild); 
+    Log.toastInfo($isAutoBuild ? 'auto-build on' :  'auto-build off');
+  };
+
   // UI actions   
   const reqOpenArchiveDrawer = async () => {
     if (!$drawerStore.open){
@@ -724,7 +729,7 @@
     <AppRailAnchor 
       href="#" 
       title="Toggle Auto-Build" 
-      on:click={() => { isAutoBuild.set(!$isAutoBuild); }} 
+      on:click={toggleAutoBuild} 
       class={$isAutoBuild ? 'bg-tertiary-500' : ''} 
       style="display:block;">
       <CustomIcon src={ico.ClockCycle} size='16' class="inline-block" />
