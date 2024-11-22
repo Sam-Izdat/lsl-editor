@@ -1,6 +1,6 @@
 {
   "name": "lsl-editor",
-  "version": "0.2.18",
+  "version": "0.2.17",
   "private": true,
   "scripts": {
     "dev": "npm run get-localcore && cross-env BUILD_TYPE=static vite dev",
@@ -57,7 +57,12 @@
     "uniqolor": "^1.1.1",
     "uuid": "^10.0.0"
   },
+  "os": [
+    "win32",
+    "linux"
+  ],
   "optionalDependencies": {
-    "rollup-linux-x64-gnu": "4.27.3"
+    "@rollup/rollup-win32-x64-msvc": "4.27.3",
+    "@rollup/rollup-linux-x64-gnu": "4.27.3"
   }
 }
