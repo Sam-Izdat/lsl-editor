@@ -232,7 +232,6 @@
               window.VIEWPORT_WIDTH = parseInt(e.data.width);
               window.VIEWPORT_HEIGHT = parseInt(e.data.height);
             }
-            window.lslcore.executeLoop();
             window.parent.postMessage({ tx: 'sandbox-render-start' }, e.origin);
             break;
           case 'harbor-reset':
@@ -246,6 +245,8 @@
           case 'harbor-ready-ack':
             clearInterval(broadcastReady);
             cfg.TX_CONTEXT_FREQ = parseInt(e.data.txContextFreq);
+            window.lslcore.screenshotWidth = e.data.shWidth;
+            window.lslcore.screenshotHeight = e.data.shHeight;
             break;
           case 'harbor-status':
             window.parent.postMessage({ tx: 'sandbox-status-report', 
@@ -281,7 +282,7 @@
       };
 
       const txBuildSuccess = () => {
-        window.parent.postMessage({ tx: 'sandbox-build-success' }, "*");
+        window.parent.postMessage({ tx: 'sandbox-build-success', sh: lslcore.screenshot }, "*");
       };
 
       const txError = (name, err, err_hash) => {

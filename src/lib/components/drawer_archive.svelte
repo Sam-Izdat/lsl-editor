@@ -11,6 +11,7 @@
   import { docListStore } from '$lib/stores';
   import { get } from 'svelte/store';
   import { Log } from '$lib';
+  import { cfg } from '$root/webui.config.js';
 
   let inputValue = '';
 
@@ -141,7 +142,11 @@
               class="btn flex justify-start items-center bg-surface-500/15 rounded gap-3 mx-0 my-1 px-2 py-1 w-full"
               on:click={ async () => { await loadDocCallback(doc.docID, doc.adapter); }}
             >
-              <div class="placeholder w-16 h-12 rounded" />
+              <div class="placeholder rounded shadow-inner" style={`width: ${cfg.SCREENSHOT_WIDTH}px; height: ${cfg.SCREENSHOT_HEIGHT}px;`}>
+                {#if doc.screenshot}
+                <img src={doc.screenshot} alt="screenshot" class="rounded" width={cfg.SCREENSHOT_WIDTH} height={cfg.SCREENSHOT_WIDTH} />
+                {/if}
+              </div>
               <div class="flex flex-col items-start w-64">
                 <div class="text-sm font-regular truncate overflow-hidden text-ellipsis whitespace-nowrap text-left max-w-96">
                   {doc.docName ?? 'unknown'}

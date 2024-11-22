@@ -63,7 +63,7 @@ export const rxSandbox = (e: Event) => {
       break;
     case 'sandbox-build-success':
       Log.debug('Sandbox build successful.');
-      window.dispatchEvent(new CustomEvent('build-success'));
+      window.dispatchEvent(new CustomEvent('build-success', {detail: {sh: e.data.sh}}));
       break;
     case 'sandbox-error':
       window.dispatchEvent(new CustomEvent('build-error', {
@@ -138,7 +138,7 @@ export const txReset = (sandbox: Window) => {
 };
 
 export const txReadyAck = (sandbox: Window) => {
-  sandbox.postMessage({ tx: 'harbor-ready-ack', txContextFreq: cfg.TX_CONTEXT_FREQ }, "*");
+  sandbox.postMessage({ tx: 'harbor-ready-ack', txContextFreq: cfg.TX_CONTEXT_FREQ, shWidth: cfg.SCREENSHOT_WIDTH, shHeight: cfg.SCREENSHOT_HEIGHT}, "*");
 };
 
 export const txStatus = (sandbox: Window) => {

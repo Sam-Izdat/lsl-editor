@@ -34,7 +34,8 @@ export const documentSession = writable<DocumentSession>({
   versionCount:   1,
   content:        [''],
   unsavedChanges: false,
-  paneSizes:      null
+  paneSizes:      null,
+  screenshot:     '',
 });
 
 export const newSession = (docName: string = 'Untitled Script', content:string = '') => {
@@ -45,7 +46,8 @@ export const newSession = (docName: string = 'Untitled Script', content:string =
     versionCount: 1,
     content: [content],
     contentBuffer: content,
-    unsavedChanges: false
+    unsavedChanges: false,
+    screenshot: '',
   });
 };
 

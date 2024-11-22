@@ -153,10 +153,11 @@
     harbor.txReadyAck(canvasframeWindow);
   };
 
-  const buildSuccess = () => {
+  const buildSuccess = (e) => {
     Log.scriptSuccess("build completed");
     const flashCol = $isDark ? cfg.BUILD_COL_SUCCESS[0] : cfg.BUILD_COL_SUCCESS[1];
     pulseEditorBackground(flashCol, cfg.BUILD_FLASH_DUR);
+    dsCurrentSession.screenshot = e.detail.sh ?? '';
     setTimeout(() => { 
       $contextListen = true;  
     }, 50); // slight delay to make sure it's new context
@@ -334,7 +335,7 @@
           drawerStore.close();
           setSessionURL();
           setTimeout(async () => { 
-            await reqBuild(true); 
+            await reqBuild(true);
           }, 350); // wait for pane animation to complete
         },
       });

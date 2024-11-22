@@ -76,4 +76,10 @@ export const cfg = {
 
   // color to flash editor on build failure (dark and light mode respectively)
   BUILD_COL_FAILURE:  ['rgba(255, 0, 0, 0.1)', 'rgba(255, 0, 0, 0.5)'],
+
+  // saved script screenhot thumbnail width in pixels
+  SCREENSHOT_WIDTH:   100,
+
+  // saved script screenhot thumbnail height in pixels
+  SCREENSHOT_HEIGHT:  60,
 };

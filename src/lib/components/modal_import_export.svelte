@@ -362,7 +362,8 @@
                         `\n  height="${iframeHeight || 600}" ` + 
                         `\n  allow="clipboard-read; clipboard-write${iframeAllowFullscreen ? '; fullscreen' : ''}" ` + 
                         `\n  src="${(embedType === 0 ? codeURL : shareableURL) || '[PROVIDE URL ABOVE]'}" ` + 
-                        `\n  title="${cfg.APP_TITLE}">`
+                        `\n  title="${cfg.APP_TITLE}" ` + 
+                        `\n  style="border: none;">`
                     } 
                   >
 
