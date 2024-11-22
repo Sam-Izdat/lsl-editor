@@ -5,7 +5,7 @@
   import { FileDropzone } from '@skeletonlabs/skeleton';
   import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
-  import { CodeBlock } from '@skeletonlabs/skeleton';
+  import { CustomCodeBlock } from '$lib/components';
   import hljs from 'highlight.js/lib/core';
   import xml from 'highlight.js/lib/languages/xml';
   hljs.registerLanguage('xml', xml);
@@ -356,17 +356,17 @@
                 </svelte:fragment>
                 <svelte:fragment slot="summary"><p class="font-semibold text-base">Embed</p></svelte:fragment>
                 <svelte:fragment slot="content">
-                  <CodeBlock language="html" code={
+                  <CustomCodeBlock language="html" code={
                         `<iframe ` +
                         `\n  width="${iframeWidth || 800}" `+
                         `\n  height="${iframeHeight || 600}" ` + 
-                        `${iframeAllowFullscreen ? '\n  allow="fullscreen" ' : ''}` + 
+                        `\n  allow="clipboard-read; clipboard-write${iframeAllowFullscreen ? '; fullscreen' : ''}" ` + 
                         `\n  src="${(embedType === 0 ? codeURL : shareableURL) || '[PROVIDE URL ABOVE]'}" ` + 
                         `\n  title="${cfg.APP_TITLE}">`
                     } 
                   >
 
-                  </CodeBlock>
+                  </CustomCodeBlock>
                   <div>
                     <div class="flex items-center justify-center">
                       <input 

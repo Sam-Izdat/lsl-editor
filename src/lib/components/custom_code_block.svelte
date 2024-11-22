@@ -43,7 +43,7 @@
 	export let buttonCopied = '!variant-filled-success';
 
 	export let darkMode = true;
-	export let editorURL = '#';
+	export let editorURL = undefined;
 	export let inplace = true;
 
 	// Base Classes
@@ -106,6 +106,7 @@
 		<span class="codeblock-language {darkMode ? '!text-neutral-100' : '!text-neutral-900'}">{languageFormatter(language)}</span>
 
 		<!-- Editor Button -->
+		{#if editorURL}
 		<a 
 			href={editorURL} 
 			class="codeblock-btn {button} {darkMode ? '!text-white' : '!text-black'}" 
@@ -114,6 +115,7 @@
 		>
 			Build / Edit
 		</a>
+		{/if}
 		<!-- Copy Button -->
 		<button type="button" class="codeblock-btn {button} {darkMode ? '!text-white' : '!text-black'} {!copyState ? '' : buttonCopied}" on:click={onCopyClick} >
 			{buttonLabel}
