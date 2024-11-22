@@ -1,0 +1,26 @@
+:global(html) { 
+  background: transparent !important;
+  scrollbar-color: rgba(128, 128, 128, 0.5) rgba(0, 0, 0, 0.1) !important;
+}
+:global(html.dark) { 
+  scrollbar-color: rgba(128, 128, 128, 0.5) rgba(0, 0, 0, 0.1) !important;
+}
+:global(body) { 
+  @apply border-2 border-surface-500/50;
+  background: transparent !important;
+  scrollbar-color: #330000 !important;
+}
+/*
+:global(.code_container) {
+
+}*/
+
+/*
+:global(.codeblock-pre){ 
+  @apply bg-neutral-50 dark:bg-neutral-900;
+}
+
+:global(.codeblock-header) { 
+  @apply bg-neutral-50 dark:bg-neutral-900;
+}*/
+

@@ -6,6 +6,7 @@ const CACHE = `cache-${version}`;
 const ROUTES = [
   `${base}/`, 
   `${base}/pth`, 
+  `${base}/code-viewer`, 
   `${base}/canvasframe-error`, 
   `${base}/open-file`, 
   `${base}/get-gist`, 

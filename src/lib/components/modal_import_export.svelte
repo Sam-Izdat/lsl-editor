@@ -69,7 +69,7 @@
     }
   };
 
-  const registerProtocolHandler = () => {
+  const regPTH = () => {
     navigator.registerProtocolHandler(
       `web+${cfg.PWA_URL_PATTERN}`,
       `${cfg.APP_HOST_PATH}pth?q=%s`,
@@ -109,12 +109,15 @@
   let extResourceValue: string = '';
   let selectedOption: string = 'raw';
   let shareableURL: string = '';
+  let codeURL: string = '';
   let shareablePWAURL: string = '';
 
 
-  const defaultView       = 0;
-  const defaultAutoBuild  = 0;
-  const defaultReadOnly   = 0;
+  const defaultView                     = 0;
+  const defaultAutoBuild                = 0;
+  const defaultReadOnly                 = 0;
+  const defaultCodeViewerLight          = 0;
+  const defaultCodeViewerEditNewWindow  = 0;
 
   $: makeURL = () => {
     if (extResourceValue.trim() === '') {
@@ -129,33 +132,48 @@
         ? `${cfg.APP_HOST_PATH}get-url?q=${encodedURI}`
         : `${cfg.APP_HOST_PATH}url/${encodedURI}`;
       shareablePWAURL = `web+${cfg.PWA_URL_PATTERN}://url/${encodedURI}`;
+      codeURL = `${cfg.APP_HOST_PATH}code-viewer?q=${encodedURI}&type=url`
     } else if (selectedOption === 'gist') {
       shareableURL = __BUILD_TYPE__ == 'static'
         ? `${cfg.APP_HOST_PATH}get-gist?q=${encodedURI}`
         : `${cfg.APP_HOST_PATH}gist/${encodedURI}`;
       shareablePWAURL = `web+${cfg.PWA_URL_PATTERN}://gist/${encodedURI}`;
+      codeURL = `${cfg.APP_HOST_PATH}code-viewer?q=${encodedURI}&type=gist`
     }
 
     if (urlView != defaultView) {
-      shareableURL += `${shareableURL.includes('?') ? '&' : '?'}view=${urlView}`;
+      shareableURL    += `${shareableURL.includes('?')    ? '&' : '?'}view=${urlView}`;
       shareablePWAURL += `${shareablePWAURL.includes('?') ? '&' : '?'}view=${urlView}`;
+      codeURL         += `${codeURL.includes('?')         ? '&' : '?'}view=${urlView}`;
     }
     if (urlAutoBuild != defaultAutoBuild) {
-      shareableURL += `${shareableURL.includes('?') ? '&' : '?'}autobuild=${urlAutoBuild}`;
+      shareableURL    += `${shareableURL.includes('?')    ? '&' : '?'}autobuild=${urlAutoBuild}`;
       shareablePWAURL += `${shareablePWAURL.includes('?') ? '&' : '?'}autobuild=${urlAutoBuild}`;
+      codeURL         += `${codeURL.includes('?')         ? '&' : '?'}autobuild=${urlAutoBuild}`;
     }
     if (urlReadOnly != defaultReadOnly) {
-      shareableURL += `${shareableURL.includes('?') ? '&' : '?'}readonly=${urlReadOnly}`;
+      shareableURL    += `${shareableURL.includes('?')    ? '&' : '?'}readonly=${urlReadOnly}`;
       shareablePWAURL += `${shareablePWAURL.includes('?') ? '&' : '?'}readonly=${urlReadOnly}`;
+      codeURL         += `${codeURL.includes('?')         ? '&' : '?'}readonly=${urlReadOnly}`;
+    }
+    if (codeViewerLight != defaultCodeViewerLight) {
+      codeURL         += `${shareablePWAURL.includes('?') ? '&' : '?'}dark=${+!parseInt(codeViewerLight)}`;
+    }
+    if (codeViewerEditNewWindow != defaultCodeViewerEditNewWindow) {
+      codeURL         += `${codeURL.includes('?')         ? '&' : '?'}inplace=${+!parseInt(codeViewerEditNewWindow)}`;
     }
   };
 
-  $: iframeWidth            = null;
-  $: iframeHeight           = null;
-  $: iframeAllowFullscreen  = 1;
-  $: urlView                = 0;
-  $: urlAutoBuild           = 0;
-  $: urlReadOnly            = 0;
+  $: iframeWidth              = null;
+  $: iframeHeight             = null;
+  $: iframeAllowFullscreen    = 1;
+  $: urlView                  = 0;
+  $: urlAutoBuild             = 0;
+  $: urlReadOnly              = 0;
+
+  $: embedType                = 0;
+  $: codeViewerLight          = 0;
+  $: codeViewerEditNewWindow  = 0;
 
   $: if (urlView !== undefined)       makeURL();
   $: if (urlAutoBuild !== undefined)  makeURL();
@@ -247,7 +265,7 @@
                     <code class="code">about:preferences#general</code> afterward and select the right handler.
                   </p>
                   <div class="flex justify-center">
-                    <button class="btn {parent.buttonNeutral}" on:click={registerProtocolHandler}>
+                    <button class="btn {parent.buttonNeutral}" on:click={regPTH}>
                       Register Protocol Handler
                     </button>
                   </div>
@@ -339,12 +357,15 @@
                 <svelte:fragment slot="summary"><p class="font-semibold text-base">Embed</p></svelte:fragment>
                 <svelte:fragment slot="content">
                   <CodeBlock language="html" code={
-                  `<iframe ` +
-                  `\n  width="${iframeWidth || 800}" `+
-                  `\n  height="${iframeHeight || 600}" ` + 
-                  `${iframeAllowFullscreen ? '\n  allow="fullscreen" ' : ''}` + 
-                  `\n  src="${shareableURL || '[PROVIDE URL ABOVE]'}" ` + 
-                  `\n  title="${cfg.APP_TITLE}">`}>
+                        `<iframe ` +
+                        `\n  width="${iframeWidth || 800}" `+
+                        `\n  height="${iframeHeight || 600}" ` + 
+                        `${iframeAllowFullscreen ? '\n  allow="fullscreen" ' : ''}` + 
+                        `\n  src="${(embedType === 0 ? codeURL : shareableURL) || '[PROVIDE URL ABOVE]'}" ` + 
+                        `\n  title="${cfg.APP_TITLE}">`
+                    } 
+                  >
+
                   </CodeBlock>
                   <div>
                     <div class="flex items-center justify-center">
@@ -369,6 +390,36 @@
                           name="iframe-allow-fullscreen" value={1} title="Allow Fullscreen"
                         >
                           <Icon src="{hero.ArrowsPointingOut}" size="16" class="mx-0 my-1" solid/>
+                        </RadioItem>
+                      </RadioGroup>
+                    </div>
+                    <div class="flex items-center justify-center my-1">
+                      <RadioGroup class="mx-1">
+                        <RadioItem bind:group={embedType} name="embed-type" value={0} title="Embed Code">
+                          <Icon src="{hero.Eye}" size="16" class="mx-0 my-1" solid/>
+                        </RadioItem>
+                        <RadioItem bind:group={embedType} name="embed-type" value={1} title="Embed Editor">
+                          <Icon src="{hero.PencilSquare}" size="16" class="mx-0 my-1" solid/>
+                        </RadioItem>
+                      </RadioGroup>
+                      <RadioGroup class="mx-1">
+                        <RadioItem 
+                          bind:group={codeViewerLight} 
+                          on:click={() => {codeViewerLight = +!codeViewerLight;}}
+                          disabled={embedType == 0 ? '' : 'disabled'}
+                          name="code-viewer-light" value={+!defaultCodeViewerLight} title="Light Mode"
+                        >
+                          <Icon src="{hero.LightBulb}" size="16" class="mx-0 my-1" solid/>
+                        </RadioItem>
+                      </RadioGroup>
+                      <RadioGroup class="mx-1">
+                        <RadioItem 
+                          bind:group={codeViewerEditNewWindow} 
+                          on:click={() => {codeViewerEditNewWindow = +!codeViewerEditNewWindow;}}
+                          disabled={embedType == 0 ? '' : 'disabled'}
+                          name="code-viewer-inplace" value={+!defaultCodeViewerEditNewWindow} title="Edit in New Window"
+                        >
+                          <Icon src="{hero.Window}" size="16" class="mx-0 my-1" solid/>
                         </RadioItem>
                       </RadioGroup>
                     </div>

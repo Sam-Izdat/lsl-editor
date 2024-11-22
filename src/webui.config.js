@@ -53,8 +53,11 @@ export const cfg = {
   // LocalStorage prefix
   LS_PREFIX:          'lsl-script-',
 
-  // the programming language monaco editor should use
+  // the programming language syntax monaco editor should use
   EDITOR_LANGUAGE:    'c',
+
+  // the name of the scripting language (ASCII/Latin alphabetic, no whitespace or punctuation)
+  LANGUAGE_ALIAS:     'LegitSL',
 
   // attempt to guess at "raw" URLs if given an HTML page address to import
   GUESS_RAW_URL:      true,

@@ -14,3 +14,4 @@ export { default as DebugTable }          from './debug.svelte';
 export { default as ProgControls }        from './controls.svelte';
 export { default as ControlsAccordion }   from './controls_accordion.svelte';
 export { default as CustomRangeSlider }   from './custom_range_slider.svelte';
+export { default as CustomCodeBlock }   	from './custom_code_block.svelte';

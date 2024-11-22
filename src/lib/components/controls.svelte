@@ -54,7 +54,7 @@
       </span>
     </div>
     {:else if item.text === '---'}
-    <hr class="my-1" />
+    <hr class="my-1 !border-dashed !border-double" />
     {:else}
     <div>
       <span class="flex-auto">{item.text}</span>
