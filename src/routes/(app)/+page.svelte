@@ -585,8 +585,20 @@
       const fileData = sessionStorage.getItem('importRequestFile'); 
       sessionStorage.removeItem('importRequestFile');
 
+      // Listen for orientation changes and do initial check
+      window.screen.orientation.onchange = () => {
+        // Don't shorten to just arrow - this has to be in curlies... for some reason.
+        mobileHandler.orientationChange();
+      };
+
+      if (Device.isMobile){
+        if (cfg.MOBILE_READONLY) docHandler.disableEditing();
+      }
+      mobileHandler.orientationChange();
+
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('private')) {
+        await waitForCanvas();
         const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
         await reqLoadDoc(urlDocUUID, 'idb').catch(async (err_idb) => {
           console.error('LOADERR - failed to locate IDB doc', err_idb);
@@ -605,17 +617,6 @@
         docHandler.newDoc(contentToLoad);
         setURLFragment('/');
       }
-
-      // Listen for orientation changes and do initial check
-      window.screen.orientation.onchange = () => {
-        // Don't shorten to just arrow - this has to be in curlies... for some reason.
-        mobileHandler.orientationChange();
-      };
-
-      if (Device.isMobile){
-        if (cfg.MOBILE_READONLY) docHandler.disableEditing();
-      }
-      mobileHandler.orientationChange();
 
       await reqBuild();
       await reqStartAnimation();
