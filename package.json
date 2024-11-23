@@ -48,7 +48,7 @@
     "@sveltejs/adapter-static": "^3.0.6",
     "fs-extra": "^11.2.0",
     "highlight.js": "^11.10.0",
-    "legitsl-web-core": "github:Sam-Izdat/legitsl-web-core#0.1.10",
+    "legitsl-web-core": "github:Sam-Izdat/legitsl-web-core#0.1.11",
     "monaco-editor": "^0.52.0",
     "resize-observer-polyfill": "^1.5.1",
     "svelte-device-info": "^1.0.6",
