@@ -115,6 +115,8 @@ export const loadSession = async (uuid: string, adapter: string) => {
     throw new Error('unknown adapter:', adapter);
   }
 
+  if (!sessionLoaded?.docID) throw new Error('failed to load valid session');
+
   documentSession.set(sessionLoaded);
   documentSession.update(session => {
     session.unsavedChanges = false;

@@ -31,6 +31,7 @@ export class DocHandler {
     } catch(e) {
       Log.error(e);
       Log.toastError('save failed');
+      throw(e);
     }
   };
 
@@ -45,6 +46,7 @@ export class DocHandler {
     } catch(e) {
       Log.error(e);
       Log.toastError('load failed');
+      throw(e);
     }
   };
 
@@ -55,6 +57,7 @@ export class DocHandler {
     } catch(e) {
       Log.error(e);
       Log.toastError('fork script failed');
+      throw(e);
     } 
   }
 
@@ -69,6 +72,7 @@ export class DocHandler {
     } catch(e) {
       Log.error(e);
       Log.toastError('load version failed');
+      throw(e);
     } 
   };
 
@@ -86,6 +90,7 @@ export class DocHandler {
     } catch(e) {
       Log.error(e);
       Log.toastError('save failed');
+      throw(e);
     }
   };
 
@@ -121,6 +126,7 @@ export class DocHandler {
     } catch(e) {
       Log.error(e);
       Log.toastInfo('failed to delete script');
+      throw(e);
     }
     Log.toastInfo('script deleted');
   }

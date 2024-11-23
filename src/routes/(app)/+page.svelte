@@ -593,30 +593,6 @@
 
       docHandler.newDoc(contentToLoad);
 
-      const urlParams = new URLSearchParams(window.location.search);
-      let docLoaded = false;
-      if (urlParams.get('private')) {
-        const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
-        try {
-          console.warn('LOADING ', urlDocUUID, 'idb');
-          await reqLoadDoc(urlDocUUID, 'idb');
-          docLoaded = true;
-        } catch (e) {
-          try {
-            console.warn('LOADING ', urlDocUUID, 'ls');
-            await reqLoadDoc(urlDocUUID, 'ls');
-            docLoaded = true;
-          } catch (e) {
-            Log.toastError('failed to load script');
-            Log.error(e);
-          }
-        }
-      }
-
-      if (!docLoaded) {
-        setURLFragment('/');
-      }
-
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
         // Don't shorten to just arrow - this has to be in curlies... for some reason.
@@ -652,6 +628,22 @@
       if (importShareableURL !== null) {
         window.history.replaceState(null, '', importShareableURL);
         sessionStorage.removeItem('importShareableURL');
+      }
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('private')) {
+        await waitForCanvas();
+        const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
+        await reqLoadDoc(urlDocUUID, 'idb').catch(async (err_idb) => {
+          console.error('LOADERR - failed to locate IDB doc', err_idb);
+          console.warn('LOADING ', urlDocUUID, 'ls');
+          await reqLoadDoc(urlDocUUID, 'ls').catch (async (err_ls) => {
+            Log.toastError('failed to load script');
+            Log.error('LOADERR - failed to locate LS doc', err_ls);
+          });
+        });
+      } else {
+        setURLFragment('/');
       }
     }
   });
