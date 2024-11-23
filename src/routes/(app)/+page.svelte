@@ -320,6 +320,7 @@
   };
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
+    console.warn('**** LOADING ', uuid, adapter);
     Log.clearScriptLog();
     debugStore.clear();
     if (dsCurrentSession.unsavedChanges){
