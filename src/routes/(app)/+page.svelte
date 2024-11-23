@@ -590,8 +590,30 @@
         contentToLoad = file[0].content || null; 
       }
 
-      docHandler.newDoc(contentToLoad);
-      setURLFragment('/');
+      const urlParams = new URLSearchParams(window.location.search);
+      let docLoaded = false;
+      if (urlParams.get('private')) {
+        const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
+        try {
+          console.warn('LOADING ', urlDocUUID, 'idb');
+          await reqLoadDoc(urlDocUUID, 'idb');
+          docLoaded = true;
+        } catch (e) {
+          try {
+            console.warn('LOADING ', urlDocUUID, 'ls');
+            await reqLoadDoc(urlDocUUID, 'ls');
+            docLoaded = true;
+          } catch (e) {
+            Log.toastError('failed to load script');
+            Log.error(e);
+          }
+        }
+      }
+
+      if (!docLoaded) {
+        docHandler.newDoc(contentToLoad);
+        setURLFragment('/');
+      }
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
