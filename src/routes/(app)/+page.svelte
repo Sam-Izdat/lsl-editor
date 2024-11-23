@@ -590,6 +590,8 @@
         contentToLoad = file[0].content || null; 
       }
 
+      docHandler.newDoc(contentToLoad);
+
       const urlParams = new URLSearchParams(window.location.search);
       let docLoaded = false;
       if (urlParams.get('private')) {
@@ -611,7 +613,6 @@
       }
 
       if (!docLoaded) {
-        docHandler.newDoc(contentToLoad);
         setURLFragment('/');
       }
 
