@@ -585,13 +585,26 @@
       const fileData = sessionStorage.getItem('importRequestFile'); 
       sessionStorage.removeItem('importRequestFile');
 
-      let contentToLoad; 
-      if (fileData) {
-        const file = JSON.parse(fileData);
-        contentToLoad = file[0].content || null; 
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('private')) {
+        const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
+        await reqLoadDoc(urlDocUUID, 'idb').catch(async (err_idb) => {
+          console.error('LOADERR - failed to locate IDB doc', err_idb);
+          console.warn('LOADING ', urlDocUUID, 'ls');
+          await reqLoadDoc(urlDocUUID, 'ls').catch (async (err_ls) => {
+            Log.toastError('failed to load script');
+            Log.error('LOADERR - failed to locate LS doc', err_ls);
+          });
+        });
+      } else {
+        let contentToLoad; 
+        if (fileData) {
+          const file = JSON.parse(fileData);
+          contentToLoad = file[0].content || null; 
+        }
+        docHandler.newDoc(contentToLoad);
+        setURLFragment('/');
       }
-
-      docHandler.newDoc(contentToLoad);
 
       // Listen for orientation changes and do initial check
       window.screen.orientation.onchange = () => {
@@ -630,21 +643,6 @@
         sessionStorage.removeItem('importShareableURL');
       }
       
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('private')) {
-        await waitForCanvas();
-        const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
-        await reqLoadDoc(urlDocUUID, 'idb').catch(async (err_idb) => {
-          console.error('LOADERR - failed to locate IDB doc', err_idb);
-          console.warn('LOADING ', urlDocUUID, 'ls');
-          await reqLoadDoc(urlDocUUID, 'ls').catch (async (err_ls) => {
-            Log.toastError('failed to load script');
-            Log.error('LOADERR - failed to locate LS doc', err_ls);
-          });
-        });
-      } else {
-        setURLFragment('/');
-      }
     }
   });
 
