@@ -595,9 +595,9 @@
       }
       mobileHandler.orientationChange();
 
+      await waitForCanvas();
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('private')) {
-        await waitForCanvas();
+      if (urlParams.get('private')) {        
         const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
         await reqLoadDoc(urlDocUUID, 'idb').catch(async (err_idb) => {
           await reqLoadDoc(urlDocUUID, 'ls').catch (async (err_ls) => {
@@ -613,7 +613,7 @@
         docHandler.newDoc(contentToLoad);
         setURLFragment('/');
       }
-
+      reqResize();
       await reqBuild();
       await reqStartAnimation();
       monacoEditor.focus();
