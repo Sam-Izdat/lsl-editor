@@ -320,7 +320,6 @@
   };
 
   const reqLoadDoc = async (uuid: string, adapter: string) => {
-    console.warn('**** LOADING ', uuid, adapter);
     Log.clearScriptLog();
     debugStore.clear();
     if (dsCurrentSession.unsavedChanges){
@@ -601,11 +600,8 @@
         await waitForCanvas();
         const urlDocUUID = decodeURIToUUID(urlParams.get('private'));
         await reqLoadDoc(urlDocUUID, 'idb').catch(async (err_idb) => {
-          console.error('LOADERR - failed to locate IDB doc', err_idb);
-          console.warn('LOADING ', urlDocUUID, 'ls');
           await reqLoadDoc(urlDocUUID, 'ls').catch (async (err_ls) => {
             Log.toastError('failed to load script');
-            Log.error('LOADERR - failed to locate LS doc', err_ls);
           });
         });
       } else {
